@@ -28,7 +28,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ITEALab - Innovation through Technology and Education",
+  title: "ITeaLab - Innovation through Technology and Education",
   description: "We are a forward-thinking laboratory focused on advancing technology and education through innovative research and collaborative projects.",
 };
 

@@ -58,7 +58,7 @@ const translations = {
     'join_us': 'Join Us',
     
     // Hero Section
-    'welcome_title': 'Welcome to ITEALab',
+    'welcome_title': 'Welcome to ITeaLab',
     'welcome_subtitle': 'Innovation through Technology and Education',
     'welcome_description': 'We are a forward-thinking laboratory focused on advancing technology and education through innovative research and collaborative projects.',
     
@@ -198,7 +198,7 @@ const translations = {
     'join_us': 'Tham gia với chúng tôi',
     
     // Hero Section
-    'welcome_title': 'Chào mừng đến với ITEALab',
+    'welcome_title': 'Chào mừng đến với ITeaLab',
     'welcome_subtitle': 'Đổi mới thông qua Công nghệ và Giáo dục',
     'welcome_description': 'Chúng tôi là một phòng thí nghiệm tiến bộ tập trung vào việc phát triển công nghệ và giáo dục thông qua nghiên cứu đổi mới và các dự án hợp tác.',
     
@@ -338,7 +338,7 @@ const translations = {
     'join_us': '参加する',
     
     // Hero Section
-    'welcome_title': 'ITEALabへようこそ',
+    'welcome_title': 'ITeaLabへようこそ',
     'welcome_subtitle': '技術と教育を通じたイノベーション',
     'welcome_description': '私たちは革新的な研究と協力的なプロジェクトを通じて技術と教育の発展に焦点を当てた先進的な研究室です。',
     
