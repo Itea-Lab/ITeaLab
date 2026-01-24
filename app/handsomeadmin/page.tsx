@@ -5,6 +5,7 @@ import { ArrowLeft, Edit, Trash2, Plus, X, Check } from "lucide-react";
 import CustomCursor from "../components/ui/custom-cursor";
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
+import { uploadFile } from "../components/uploadFile";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -53,7 +54,10 @@ type TabType = "News" | "Workshops" | "Applications";
 const Page = () => {
   const [activeTab, setActiveTab] = useState<TabType>("News");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   // News state
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
@@ -67,11 +71,14 @@ const Page = () => {
     url: "",
     alt: "",
   });
+  const [newsImageFile, setNewsImageFile] = useState<File | null>(null);
 
   // Workshops state
   const [workshops, setWorkshops] = useState<WorkshopItem[]>([]);
   const [workshopModalOpen, setWorkshopModalOpen] = useState(false);
-  const [editingWorkshop, setEditingWorkshop] = useState<WorkshopItem | null>(null);
+  const [editingWorkshop, setEditingWorkshop] = useState<WorkshopItem | null>(
+    null,
+  );
   const [workshopFormData, setWorkshopFormData] = useState<WorkshopItem>({
     name: "",
     url: "",
@@ -79,6 +86,7 @@ const Page = () => {
     alt: "",
     shape: "",
   });
+  const [workshopImageFile, setWorkshopImageFile] = useState<File | null>(null);
 
   // Applications state
   const [applications, setApplications] = useState<JoinRequest[]>([]);
@@ -86,7 +94,10 @@ const Page = () => {
   const [editingApp, setEditingApp] = useState<JoinRequest | null>(null);
 
   // Delete confirmation
-  const [deleteConfirm, setDeleteConfirm] = useState<{ type: "news" | "workshop"; id: number } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    type: "news" | "workshop";
+    id: number;
+  } | null>(null);
 
   useEffect(() => {
     if (activeTab === "News") fetchNews();
@@ -97,7 +108,10 @@ const Page = () => {
   // Fetch News
   const fetchNews = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("news").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase
+      .from("news")
+      .select("*")
+      .order("created_at", { ascending: false });
     if (error) {
       showMessage("error", "Failed to load news");
       console.error(error);
@@ -110,7 +124,10 @@ const Page = () => {
   // Fetch Workshops
   const fetchWorkshops = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("workshops").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase
+      .from("workshops")
+      .select("*")
+      .order("created_at", { ascending: false });
     if (error) {
       showMessage("error", "Failed to load workshops");
       console.error(error);
@@ -123,7 +140,10 @@ const Page = () => {
   // Fetch Applications
   const fetchApplications = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("join_requests").select("*").order("submitted_at", { ascending: false });
+    const { data, error } = await supabase
+      .from("join_requests")
+      .select("*")
+      .order("submitted_at", { ascending: false });
     if (error) {
       showMessage("error", "Failed to load applications");
       console.error(error);
@@ -146,7 +166,22 @@ const Page = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("news").insert([newsFormData]);
+
+    // Upload image to Cloudinary if file is selected
+    let imageUrl = newsFormData.image;
+    if (newsImageFile) {
+      try {
+        const data = await uploadFile(newsImageFile);
+        imageUrl = data.secure_url;
+      } catch (error) {
+        showMessage("error", "Failed to upload image");
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+    }
+
+    const { error } = await supabase.from("news").insert([{ ...newsFormData, image: imageUrl }]);
     if (error) {
       showMessage("error", "Failed to create news item");
       console.error(error);
@@ -162,7 +197,27 @@ const Page = () => {
   const handleUpdateNews = async () => {
     if (!editingNews?.id) return;
     setLoading(true);
-    const { error } = await supabase.from("news").update(newsFormData).eq("id", editingNews.id);
+
+    // Upload image to Cloudinary if new file is selected
+    let imageUrl = newsFormData.image;
+    if (newsImageFile) {
+      try {
+        const data = await uploadFile(newsImageFile);
+        imageUrl = data.secure_url;
+      } catch (error) {
+        showMessage("error", "Failed to upload image");
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Remove auto-generated fields before updating
+    const { id, created_at, updated_at, ...updateData } = newsFormData;
+    const { error } = await supabase
+      .from("news")
+      .update({ ...updateData, image: imageUrl })
+      .eq("id", editingNews.id);
     if (error) {
       showMessage("error", "Failed to update news item");
       console.error(error);
@@ -191,7 +246,15 @@ const Page = () => {
   };
 
   const resetNewsForm = () => {
-    setNewsFormData({ icon: "", image: "", date: "", title: "", url: "", alt: "" });
+    setNewsFormData({
+      icon: "",
+      image: "",
+      date: "",
+      title: "",
+      url: "",
+      alt: "",
+    });
+    setNewsImageFile(null);
   };
 
   // WORKSHOP CRUD OPERATIONS
@@ -201,7 +264,24 @@ const Page = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("workshops").insert([workshopFormData]);
+
+    // Upload image to Cloudinary if file is selected
+    let imageUrl = workshopFormData.image;
+    if (workshopImageFile) {
+      try {
+        const data = await uploadFile(workshopImageFile);
+        imageUrl = data.secure_url;
+      } catch (error) {
+        showMessage("error", "Failed to upload image");
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+    }
+
+    const { error } = await supabase
+      .from("workshops")
+      .insert([{ ...workshopFormData, image: imageUrl }]);
     if (error) {
       showMessage("error", "Failed to create workshop");
       console.error(error);
@@ -217,7 +297,27 @@ const Page = () => {
   const handleUpdateWorkshop = async () => {
     if (!editingWorkshop?.id) return;
     setLoading(true);
-    const { error } = await supabase.from("workshops").update(workshopFormData).eq("id", editingWorkshop.id);
+
+    // Upload image to Cloudinary if new file is selected
+    let imageUrl = workshopFormData.image;
+    if (workshopImageFile) {
+      try {
+        const data = await uploadFile(workshopImageFile);
+        imageUrl = data.secure_url;
+      } catch (error) {
+        showMessage("error", "Failed to upload image");
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Remove auto-generated fields before updating
+    const { id, created_at, updated_at, ...updateData } = workshopFormData;
+    const { error } = await supabase
+      .from("workshops")
+      .update({ ...updateData, image: imageUrl })
+      .eq("id", editingWorkshop.id);
     if (error) {
       showMessage("error", "Failed to update workshop");
       console.error(error);
@@ -247,6 +347,7 @@ const Page = () => {
 
   const resetWorkshopForm = () => {
     setWorkshopFormData({ name: "", url: "", image: "", alt: "", shape: "" });
+    setWorkshopImageFile(null);
   };
 
   // APPLICATION UPDATE OPERATION
@@ -255,9 +356,13 @@ const Page = () => {
     setLoading(true);
     const updateData = {
       status: editingApp.status,
-      processed_at: editingApp.status === "processed" ? new Date().toISOString() : null,
+      processed_at:
+        editingApp.status === "processed" ? new Date().toISOString() : null,
     };
-    const { error } = await supabase.from("join_requests").update(updateData).eq("id", editingApp.id);
+    const { error } = await supabase
+      .from("join_requests")
+      .update(updateData)
+      .eq("id", editingApp.id);
     if (error) {
       showMessage("error", "Failed to update application");
       console.error(error);
@@ -276,7 +381,10 @@ const Page = () => {
 
       {/* Header */}
       <div className="max-w-7xl mx-auto">
-        <Link href="/" className="flex gap-2 text-xl sm:text-2xl items-center hover:text-light-green transition-colors">
+        <Link
+          href="/"
+          className="flex gap-2 text-xl sm:text-2xl items-center hover:text-light-green transition-colors"
+        >
           <ArrowLeft /> Back
         </Link>
 
@@ -287,7 +395,9 @@ const Page = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`text-xl sm:text-3xl pb-4 transition-colors ${
-                activeTab === tab ? "text-light-green border-b-2 border-light-green" : "text-gray-500"
+                activeTab === tab
+                  ? "text-light-green border-b-2 border-light-green"
+                  : "text-gray-500"
               }`}
             >
               {tab}
@@ -299,7 +409,9 @@ const Page = () => {
         {message && (
           <div
             className={`mt-4 p-4 rounded ${
-              message.type === "success" ? "bg-light-green text-background" : "bg-red-600 text-white"
+              message.type === "success"
+                ? "bg-light-green text-background"
+                : "bg-red-600 text-white"
             }`}
           >
             {message.text}
@@ -342,16 +454,26 @@ const Page = () => {
                     </thead>
                     <tbody>
                       {newsItems.map((item) => (
-                        <tr key={item.id} className="border-b border-zinc-800 hover:bg-zinc-900">
+                        <tr
+                          key={item.id}
+                          className="border-b border-zinc-800 hover:bg-zinc-900"
+                        >
                           <td className="p-3">{item.icon}</td>
                           <td className="p-3">{item.title}</td>
                           <td className="p-3">{item.date}</td>
                           <td className="p-3">
-                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-light-green hover:underline">
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-light-green hover:underline"
+                            >
                               Link
                             </a>
                           </td>
-                          <td className="p-3 text-sm text-gray-400 truncate max-w-xs">{item.image}</td>
+                          <td className="p-3 text-sm text-gray-400 truncate max-w-xs">
+                            {item.image}
+                          </td>
                           <td className="p-3">
                             <div className="flex gap-2">
                               <button
@@ -365,7 +487,12 @@ const Page = () => {
                                 <Edit size={16} />
                               </button>
                               <button
-                                onClick={() => setDeleteConfirm({ type: "news", id: item.id! })}
+                                onClick={() =>
+                                  setDeleteConfirm({
+                                    type: "news",
+                                    id: item.id!,
+                                  })
+                                }
                                 className="p-2 bg-red-600 rounded hover:bg-red-700"
                               >
                                 <Trash2 size={16} />
@@ -376,7 +503,11 @@ const Page = () => {
                       ))}
                     </tbody>
                   </table>
-                  {newsItems.length === 0 && <p className="text-center text-gray-500 mt-8">No news items found.</p>}
+                  {newsItems.length === 0 && (
+                    <p className="text-center text-gray-500 mt-8">
+                      No news items found.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -415,14 +546,24 @@ const Page = () => {
                     </thead>
                     <tbody>
                       {workshops.map((item) => (
-                        <tr key={item.id} className="border-b border-zinc-800 hover:bg-zinc-900">
+                        <tr
+                          key={item.id}
+                          className="border-b border-zinc-800 hover:bg-zinc-900"
+                        >
                           <td className="p-3">{item.name}</td>
                           <td className="p-3">
-                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-light-green hover:underline">
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-light-green hover:underline"
+                            >
                               Link
                             </a>
                           </td>
-                          <td className="p-3 text-sm text-gray-400 truncate max-w-xs">{item.image}</td>
+                          <td className="p-3 text-sm text-gray-400 truncate max-w-xs">
+                            {item.image}
+                          </td>
                           <td className="p-3">{item.shape}</td>
                           <td className="p-3">
                             <div className="flex gap-2">
@@ -437,7 +578,12 @@ const Page = () => {
                                 <Edit size={16} />
                               </button>
                               <button
-                                onClick={() => setDeleteConfirm({ type: "workshop", id: item.id! })}
+                                onClick={() =>
+                                  setDeleteConfirm({
+                                    type: "workshop",
+                                    id: item.id!,
+                                  })
+                                }
                                 className="p-2 bg-red-600 rounded hover:bg-red-700"
                               >
                                 <Trash2 size={16} />
@@ -448,7 +594,11 @@ const Page = () => {
                       ))}
                     </tbody>
                   </table>
-                  {workshops.length === 0 && <p className="text-center text-gray-500 mt-8">No workshops found.</p>}
+                  {workshops.length === 0 && (
+                    <p className="text-center text-gray-500 mt-8">
+                      No workshops found.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -458,7 +608,9 @@ const Page = () => {
           {activeTab === "Applications" && (
             <div>
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Applications (Read & Update Only)</h2>
+                <h2 className="text-2xl font-bold">
+                  Applications (Read & Update Only)
+                </h2>
               </div>
 
               {loading ? (
@@ -480,22 +632,37 @@ const Page = () => {
                     </thead>
                     <tbody>
                       {applications.map((item) => (
-                        <tr key={item.id} className="border-b border-zinc-800 hover:bg-zinc-900">
+                        <tr
+                          key={item.id}
+                          className="border-b border-zinc-800 hover:bg-zinc-900"
+                        >
                           <td className="p-3">{item.full_name}</td>
                           <td className="p-3">{item.email}</td>
-                          <td className="p-3 max-w-xs truncate">{item.message || "-"}</td>
-                          <td className="p-3 text-sm">{item.addons?.join(", ") || "-"}</td>
-                          <td className="p-3">{item.newsletter ? "Yes" : "No"}</td>
+                          <td className="p-3 max-w-xs truncate">
+                            {item.message || "-"}
+                          </td>
+                          <td className="p-3 text-sm">
+                            {item.addons?.join(", ") || "-"}
+                          </td>
+                          <td className="p-3">
+                            {item.newsletter ? "Yes" : "No"}
+                          </td>
                           <td className="p-3">
                             <span
                               className={`px-2 py-1 rounded text-xs ${
-                                item.status === "processed" ? "bg-green-700" : "bg-yellow-700"
+                                item.status === "processed"
+                                  ? "bg-green-700"
+                                  : "bg-yellow-700"
                               }`}
                             >
                               {item.status || "pending"}
                             </span>
                           </td>
-                          <td className="p-3 text-sm">{item.submitted_at ? new Date(item.submitted_at).toLocaleDateString() : "-"}</td>
+                          <td className="p-3 text-sm">
+                            {item.submitted_at
+                              ? new Date(item.submitted_at).toLocaleDateString()
+                              : "-"}
+                          </td>
                           <td className="p-3">
                             <button
                               onClick={() => {
@@ -511,7 +678,11 @@ const Page = () => {
                       ))}
                     </tbody>
                   </table>
-                  {applications.length === 0 && <p className="text-center text-gray-500 mt-8">No applications found.</p>}
+                  {applications.length === 0 && (
+                    <p className="text-center text-gray-500 mt-8">
+                      No applications found.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -524,8 +695,13 @@ const Page = () => {
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-40">
           <div className="bg-background-light text-background p-6 rounded max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-bold">{editingNews ? "Edit News" : "Create News"}</h3>
-              <button onClick={() => setNewsModalOpen(false)} className="p-2 hover:bg-gray-200 rounded">
+              <h3 className="text-2xl font-bold">
+                {editingNews ? "Edit News" : "Create News"}
+              </h3>
+              <button
+                onClick={() => setNewsModalOpen(false)}
+                className="p-2 hover:bg-gray-200 rounded"
+              >
                 <X size={24} />
               </button>
             </div>
@@ -535,7 +711,9 @@ const Page = () => {
                 <input
                   type="text"
                   value={newsFormData.icon}
-                  onChange={(e) => setNewsFormData({ ...newsFormData, icon: e.target.value })}
+                  onChange={(e) =>
+                    setNewsFormData({ ...newsFormData, icon: e.target.value })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                   placeholder="Icon emoji or text"
                 />
@@ -545,7 +723,9 @@ const Page = () => {
                 <input
                   type="text"
                   value={newsFormData.title}
-                  onChange={(e) => setNewsFormData({ ...newsFormData, title: e.target.value })}
+                  onChange={(e) =>
+                    setNewsFormData({ ...newsFormData, title: e.target.value })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                   placeholder="News title"
                   required
@@ -556,7 +736,9 @@ const Page = () => {
                 <input
                   type="text"
                   value={newsFormData.date}
-                  onChange={(e) => setNewsFormData({ ...newsFormData, date: e.target.value })}
+                  onChange={(e) =>
+                    setNewsFormData({ ...newsFormData, date: e.target.value })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                   placeholder="e.g., Jan 15, 2024"
                 />
@@ -566,28 +748,41 @@ const Page = () => {
                 <input
                   type="url"
                   value={newsFormData.url}
-                  onChange={(e) => setNewsFormData({ ...newsFormData, url: e.target.value })}
+                  onChange={(e) =>
+                    setNewsFormData({ ...newsFormData, url: e.target.value })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                   placeholder="https://..."
                   required
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Image URL</label>
+                <label className="block mb-1 font-medium">Image</label>
                 <input
-                  type="text"
-                  value={newsFormData.image}
-                  onChange={(e) => setNewsFormData({ ...newsFormData, image: e.target.value })}
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      setNewsImageFile(e.target.files[0]);
+                    }
+                  }}
                   className="w-full p-3 border border-gray-300 rounded"
-                  placeholder="/images/..."
+                  accept="image/*"
                 />
+                {newsImageFile && (
+                  <p className="text-sm mt-1">Selected: {newsImageFile.name}</p>
+                )}
+                {newsFormData.image && !newsImageFile && (
+                  <p className="text-sm mt-1 text-gray-600">Current: {newsFormData.image}</p>
+                )}
               </div>
               <div>
                 <label className="block mb-1 font-medium">Alt Text</label>
                 <input
                   type="text"
                   value={newsFormData.alt}
-                  onChange={(e) => setNewsFormData({ ...newsFormData, alt: e.target.value })}
+                  onChange={(e) =>
+                    setNewsFormData({ ...newsFormData, alt: e.target.value })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                   placeholder="Image description"
                 />
@@ -617,8 +812,13 @@ const Page = () => {
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-40">
           <div className="bg-background-light text-background p-6 rounded max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-bold">{editingWorkshop ? "Edit Workshop" : "Create Workshop"}</h3>
-              <button onClick={() => setWorkshopModalOpen(false)} className="p-2 hover:bg-gray-200 rounded">
+              <h3 className="text-2xl font-bold">
+                {editingWorkshop ? "Edit Workshop" : "Create Workshop"}
+              </h3>
+              <button
+                onClick={() => setWorkshopModalOpen(false)}
+                className="p-2 hover:bg-gray-200 rounded"
+              >
                 <X size={24} />
               </button>
             </div>
@@ -628,7 +828,12 @@ const Page = () => {
                 <input
                   type="text"
                   value={workshopFormData.name}
-                  onChange={(e) => setWorkshopFormData({ ...workshopFormData, name: e.target.value })}
+                  onChange={(e) =>
+                    setWorkshopFormData({
+                      ...workshopFormData,
+                      name: e.target.value,
+                    })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                   placeholder="Workshop name"
                   required
@@ -639,28 +844,47 @@ const Page = () => {
                 <input
                   type="url"
                   value={workshopFormData.url}
-                  onChange={(e) => setWorkshopFormData({ ...workshopFormData, url: e.target.value })}
+                  onChange={(e) =>
+                    setWorkshopFormData({
+                      ...workshopFormData,
+                      url: e.target.value,
+                    })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                   placeholder="https://..."
                   required
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Image URL</label>
+                <label className="block mb-1 font-medium">Image</label>
                 <input
-                  type="text"
-                  value={workshopFormData.image}
-                  onChange={(e) => setWorkshopFormData({ ...workshopFormData, image: e.target.value })}
+                  type="file"
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) {
+                      setWorkshopImageFile(e.target.files[0]);
+                    }
+                  }}
                   className="w-full p-3 border border-gray-300 rounded"
-                  placeholder="/images/..."
+                  accept="image/*"
                 />
+                {workshopImageFile && (
+                  <p className="text-sm mt-1">Selected: {workshopImageFile.name}</p>
+                )}
+                {workshopFormData.image && !workshopImageFile && (
+                  <p className="text-sm mt-1 text-gray-600">Current: {workshopFormData.image}</p>
+                )}
               </div>
               <div>
                 <label className="block mb-1 font-medium">Alt Text</label>
                 <input
                   type="text"
                   value={workshopFormData.alt}
-                  onChange={(e) => setWorkshopFormData({ ...workshopFormData, alt: e.target.value })}
+                  onChange={(e) =>
+                    setWorkshopFormData({
+                      ...workshopFormData,
+                      alt: e.target.value,
+                    })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                   placeholder="Image description"
                 />
@@ -670,14 +894,23 @@ const Page = () => {
                 <input
                   type="text"
                   value={workshopFormData.shape}
-                  onChange={(e) => setWorkshopFormData({ ...workshopFormData, shape: e.target.value })}
+                  onChange={(e) =>
+                    setWorkshopFormData({
+                      ...workshopFormData,
+                      shape: e.target.value,
+                    })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                   placeholder="e.g., cube, cone, sphere"
                 />
               </div>
               <div className="flex gap-4 mt-6">
                 <button
-                  onClick={editingWorkshop ? handleUpdateWorkshop : handleCreateWorkshop}
+                  onClick={
+                    editingWorkshop
+                      ? handleUpdateWorkshop
+                      : handleCreateWorkshop
+                  }
                   disabled={loading}
                   className="flex items-center gap-2 bg-light-green text-background px-6 py-3 rounded hover:opacity-90 disabled:opacity-50"
                 >
@@ -701,7 +934,10 @@ const Page = () => {
           <div className="bg-background-light text-background p-6 rounded max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-2xl font-bold">Update Application Status</h3>
-              <button onClick={() => setAppModalOpen(false)} className="p-2 hover:bg-gray-200 rounded">
+              <button
+                onClick={() => setAppModalOpen(false)}
+                className="p-2 hover:bg-gray-200 rounded"
+              >
                 <X size={24} />
               </button>
             </div>
@@ -717,17 +953,21 @@ const Page = () => {
                   <strong>Message:</strong> {editingApp.message || "-"}
                 </p>
                 <p>
-                  <strong>Add-ons:</strong> {editingApp.addons?.join(", ") || "-"}
+                  <strong>Add-ons:</strong>{" "}
+                  {editingApp.addons?.join(", ") || "-"}
                 </p>
                 <p>
-                  <strong>Newsletter:</strong> {editingApp.newsletter ? "Yes" : "No"}
+                  <strong>Newsletter:</strong>{" "}
+                  {editingApp.newsletter ? "Yes" : "No"}
                 </p>
               </div>
               <div>
                 <label className="block mb-1 font-medium">Status</label>
                 <select
                   value={editingApp.status || "pending"}
-                  onChange={(e) => setEditingApp({ ...editingApp, status: e.target.value })}
+                  onChange={(e) =>
+                    setEditingApp({ ...editingApp, status: e.target.value })
+                  }
                   className="w-full p-3 border border-gray-300 rounded"
                 >
                   <option value="pending">Pending</option>
@@ -760,18 +1000,26 @@ const Page = () => {
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-40">
           <div className="bg-background-light text-background p-6 rounded max-w-md w-full">
             <h3 className="text-xl font-bold mb-4">Confirm Delete</h3>
-            <p className="mb-6">Are you sure you want to delete this {deleteConfirm.type}? This action cannot be undone.</p>
+            <p className="mb-6">
+              Are you sure you want to delete this {deleteConfirm.type}? This
+              action cannot be undone.
+            </p>
             <div className="flex gap-4">
               <button
                 onClick={() =>
-                  deleteConfirm.type === "news" ? handleDeleteNews(deleteConfirm.id) : handleDeleteWorkshop(deleteConfirm.id)
+                  deleteConfirm.type === "news"
+                    ? handleDeleteNews(deleteConfirm.id)
+                    : handleDeleteWorkshop(deleteConfirm.id)
                 }
                 disabled={loading}
                 className="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
               >
                 Delete
               </button>
-              <button onClick={() => setDeleteConfirm(null)} className="flex-1 bg-gray-300 text-background px-4 py-2 rounded hover:bg-gray-400">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="flex-1 bg-gray-300 text-background px-4 py-2 rounded hover:bg-gray-400"
+              >
                 Cancel
               </button>
             </div>

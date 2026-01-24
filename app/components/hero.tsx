@@ -290,7 +290,7 @@ export default function Hero() {
             <div className="absolute w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] bg-black blur-lg sm:blur-xl -translate-x-8 sm:-translate-x-12 md:-translate-x-20 translate-y-8 sm:translate-y-12 md:translate-y-20 z-0"></div>
 
             {/* Main logo container */}
-            <div className="relative p-2 sm:p-3 md:p-4 hover:p-0 duration-300 ease-in-out transition-all grayscale hover:grayscale-0 bg-white w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] z-20">
+            <div className="relative p-2 sm:p-3 md:p-4 hover:p-0 duration-300 ease-in-out transition-all hover:scale-110 bg-white w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] z-20">
               <Image
                 src="/images/icon_transparent.png"
                 alt="Hero Image"

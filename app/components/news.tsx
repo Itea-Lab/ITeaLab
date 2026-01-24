@@ -1,6 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { ArrowRight, Newspaper } from "lucide-react";
+import {
+  ArrowRight,
+  Newspaper,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "./ui/plus-icon";
@@ -33,7 +39,15 @@ const News = () => {
   const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(true);
   const [items, setItems] = useState<NewsItem[]>([]);
+  const [page, setPage] = useState(0);
+  const itemsPerPage = 2;
+  const totalPages = Math.ceil(items.length / itemsPerPage);
 
+  const paginatedItems = items.slice(
+    page * itemsPerPage,
+    (page + 1) * itemsPerPage,
+  );
+  
   useEffect(() => {
     const fetchNews = async () => {
       const { data, error } = await supabase
@@ -80,8 +94,8 @@ const News = () => {
         </motion.div>
 
         {/* News Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 max-w-6xl mx-auto">
-          {items.map((item, index) => {
+        <div className="w-full flex justify-between gap-8 sm:gap-10 md:gap-12 max-w-6xl mx-auto ">
+          {paginatedItems.map((item, index) => {
             // map icon name to component (fallback to Newspaper)
             const ItemIcon = item.icon === "Newspaper" ? Newspaper : Newspaper;
 
@@ -96,6 +110,7 @@ const News = () => {
                   ease: "easeOut",
                   delay: index * 0.2,
                 }}
+                className="flex-[1]"
               >
                 <Link
                   href={item.url}
@@ -136,6 +151,43 @@ const News = () => {
               </motion.div>
             );
           })}
+        </div>
+        <div className="relative w-full mt-8 ">
+          <div className="flex items-center justify-center relative w-full mt-12 max-w-6xl mx-auto">
+            <button
+              onClick={() => setPage(page - 1)}
+              className={`left-0 absolute rounded-full p-3 border-[2px] 
+                hover:scale-125 transition-all duration-300 ease-in-out
+                border-background-secondary ${page === 0 && "hidden"}`}
+            >
+              {" "}
+              <ChevronLeft className="h-5 w-5"></ChevronLeft>
+            </button>
+            <button
+              onClick={() => setPage(page + 1)}
+              className={`right-0 absolute rounded-full p-3
+              hover:scale-125 transition-all duration-300
+              border-[2px] border-background-secondary ease-in-out
+              ${page === (totalPages - 1) && "hidden"}`
+            }
+              
+            >
+              {" "}
+              <ChevronRight className="h-5 w-5"></ChevronRight>
+            </button>
+            <div className="flex gap-2 ">
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setPage(index)}
+                className={`h-3 w-3 rounded-sm transition-all duration-300
+                ${page === index ? "bg-light-green scale-110" : "bg-gray-500 hover:bg-gray-400"}
+              `}
+              />
+            ))}
+          </div>
+          </div>
+          
         </div>
       </div>
     </div>

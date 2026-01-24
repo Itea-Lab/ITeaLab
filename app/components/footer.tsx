@@ -149,7 +149,7 @@ const Footer = () => {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 lg:space-x-8 text-sm sm:text-base">
-            Design & dev by <span className="ml-1"><a href="https://leviron.vercel.app" className="py-2 hover:underline" target="_blank">Leviron</a></span>
+            Made with love for ITea Lab - <span className="mx-1"><a href="https://leviron.me" className="text-light-green py-2 hover:underline" target="_blank">Leviron</a></span>
           </div>
         </div>
       </div>

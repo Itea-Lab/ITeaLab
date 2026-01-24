@@ -28,7 +28,8 @@ interface workshopItem {
 const Community = () => {
   const { t } = useLanguage();
   const [workshops, setWorkshops] = useState<workshopItem[]>([]);
-
+  const maxItemToShow = 3;
+  
   useEffect(() => {
     const fetchWorkshops = async () => {
       const { data, error } = await supabase.from("workshops").select("*").order('created_at', { ascending: false });
@@ -92,7 +93,7 @@ const Community = () => {
 
             {/* Workshop Links */}
             <div className="flex flex-col gap-6 sm:gap-8 lg:justify-start">
-              {workshops.map((workshop, index) => (
+              {workshops.slice(0, maxItemToShow).map((workshop, index) => (
                 <div key={index} className="relative group">
                   {/* Corner Icons */}
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-4 transition-all duration-300 ease-out -ml-6 sm:-ml-8 md:-ml-10 lg:-ml-12">
@@ -123,7 +124,7 @@ const Community = () => {
                   </a>
                 </div>
               ))}
-              <Link href='https://www.facebook.com/' target="_blank" className="hover:text-dark-green duration-200 transition-all text-right">Other workshops</Link>
+              <Link href='https://www.facebook.com/' target="_blank" className="hover:text-dark-green duration-200 transition-all text-right hover:underline">Other workshops</Link>
             </div>
           </div>
         </div>
