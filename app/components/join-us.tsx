@@ -5,14 +5,7 @@ import { ArrowRight } from "lucide-react";
 // import { Cobe } from "./ui/draggable-and-rotate-globe";
 import { useLanguage } from "../contexts/LanguageContext";
 import ItealabLogo from "./ui/itealab-logo";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_* env vars");
-}
-const supabase = createClient(supabaseUrl ?? "", supabaseAnonKey ?? "");
+import { supabase } from "./lib/supabase";
 
 export default function JoinUs() {
   const { t } = useLanguage();

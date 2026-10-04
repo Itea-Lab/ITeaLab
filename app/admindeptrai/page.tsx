@@ -4,15 +4,8 @@ import React, { useState, useEffect } from "react";
 import { ArrowLeft, Edit, Trash2, Plus, X, Check } from "lucide-react";
 import CustomCursor from "../components/ui/custom-cursor";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../components/lib/supabase";
 import { uploadFile } from "../components/uploadFile";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_* env vars");
-}
-const supabase = createClient(supabaseUrl ?? "", supabaseAnonKey ?? "");
 
 interface NewsItem {
   id?: number;

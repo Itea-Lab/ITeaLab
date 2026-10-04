@@ -12,16 +12,7 @@ import Image from "next/image";
 import { Icon } from "./ui/plus-icon";
 import { motion } from "framer-motion";
 import { useLanguage } from "../contexts/LanguageContext";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  // fail gracefully in the client and avoid leaking secrets
-  console.error("Missing NEXT_PUBLIC_SUPABASE_* env vars");
-}
-const supabase = createClient(supabaseUrl ?? "", supabaseAnonKey ?? "");
+import { supabase } from "./lib/supabase";
 
 interface NewsItem {
   id?: number;

@@ -5,16 +5,8 @@ import { ShapeIcon } from "./ui/shapeicon";
 import { Icon } from "./ui/plus-icon";
 import ImageSlider from "./ui/image-slider";
 import { useLanguage } from "../contexts/LanguageContext";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "./lib/supabase";
 import Link from "next/link";
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  // fail gracefully in the client and avoid leaking secrets to console
-  console.error("Missing NEXT_PUBLIC_SUPABASE_* env vars");
-}
-const supabase = createClient(supabaseUrl ?? "", supabaseAnonKey ?? "");
 interface workshopItem {
   id?: number;
   name: string;
