@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Edit, Trash2, Plus, X, Check } from "lucide-react";
-import CustomCursor from "../components/ui/custom-cursor";
+import { ArrowLeft, Edit, Trash2, Plus, X, Check, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { supabase } from "../components/lib/supabase";
 import { uploadFile } from "../components/uploadFile";
 
@@ -45,6 +45,7 @@ interface JoinRequest {
 type TabType = "News" | "Workshops" | "Applications";
 
 const Page = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>("News");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -368,18 +369,30 @@ const Page = () => {
     setLoading(false);
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
+
   return (
     <div className="min-h-screen bg-background text-background-light p-6 sm:p-12">
-      <CustomCursor />
-
       {/* Header */}
       <div className="max-w-7xl mx-auto">
-        <Link
-          href="/"
-          className="flex gap-2 text-xl sm:text-2xl items-center hover:text-light-green transition-colors"
-        >
-          <ArrowLeft /> Back
-        </Link>
+        <div className="flex justify-between items-center mb-6">
+          <Link
+            href="/"
+            className="flex gap-2 text-xl sm:text-2xl items-center hover:text-light-green transition-colors"
+          >
+            <ArrowLeft /> Back
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-sm sm:text-base text-gray-300 hover:text-red-400 border border-zinc-800 hover:border-red-800/60 bg-zinc-900/80 px-4 py-2 rounded-lg transition-colors cursor-pointer"
+          >
+            <LogOut size={18} /> Logout
+          </button>
+        </div>
 
         {/* Tabs */}
         <div className="flex gap-4 sm:gap-8 mt-8 sm:mt-12 border-b border-zinc-800">
