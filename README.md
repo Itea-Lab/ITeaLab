@@ -6,7 +6,8 @@ Website for ITeaLab built with Next.js (App Router), React 19, Tailwind CSS, Sup
 
 - **Framework**: [Next.js](https://nextjs.org/) (App Router, Turbopack)
 - **Frontend**: [React 19](https://react.dev/), [Tailwind CSS v4](https://tailwindcss.com/)
-- **Database & Auth**: [Supabase](https://supabase.com/) (`@supabase/supabase-js`)
+- **Database & Auth**: [Supabase](https://supabase.com/) (`@supabase/supabase-js`, `@supabase/ssr`)
+- **State & Caching**: [TanStack Query v5](https://tanstack.com/query)
 - **Media Storage**: [Cloudinary](https://cloudinary.com/)
 - **3D & Animations**: Three.js, `@react-three/fiber`, `@react-three/drei`, Framer Motion
 
@@ -77,6 +78,12 @@ Runs the production server locally on port 3000:
 ```bash
 pnpm start
 ```
+
+---
+
+## Media Storage (Cloudinary)
+
+Image uploads are processed server-side via API and stored under the **`uploads/`** folder in Cloudinary.
 
 ---
 
