@@ -1,11 +1,12 @@
 "use client";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
-import { useState, useEffect, useMemo } from "react";
 import { Icon } from "./ui/plus-icon";
 import Image from "next/image";
 import { useCurrentTime } from "./hooks/useCurrentTime";
 import { useScreenResolution } from "./hooks/useScreenResolution";
 import { useLanguage } from "../contexts/LanguageContext";
+
 const KEYWORDS = [
   "React",
   "Next.js",
@@ -118,9 +119,11 @@ const KEYWORDS = [
   "Scrum",
   "DevOps",
 ];
-const createInfiniteArray = (arr: any, repeatTimes = 50) => {
+
+const createInfiniteArray = (arr: string[], repeatTimes = 8) => {
   return Array(repeatTimes).fill(arr).flat();
 };
+
 const getRandomSize = () => {
   const sizes = ["text-sm", "text-xl"];
   return sizes[Math.floor(Math.random() * sizes.length)];
@@ -136,41 +139,133 @@ const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-export default function Hero() {
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const currentTime = useCurrentTime();
-  const { resolution } = useScreenResolution();
-  const { t } = useLanguage();
+/*
+   OPTION 2: INTERACTIVE 3D ISOMETRIC GRID (ACTIVE)
+   Exact true 1:1 square cells (64px x 64px) centered on the 3D plane.
+   Invisible by default. Lights up on hover, unblocked by overlaying text.
+ */
+const CELL_SIZE = 64; // 64px x 64px true square
+const COLS = 44;
+const ROWS = 44;
+const TOTAL_CELLS = COLS * ROWS;
 
-  useEffect(() => {
-    const updateDimensions = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
+const Interactive3DGrid = React.memo(function Interactive3DGrid() {
+  const cells = useMemo(
+    () => Array.from({ length: TOTAL_CELLS }, (_, i) => i),
+    [],
+  );
 
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
+  return (
+    <div
+      className="absolute -z-10 grid select-none pointer-events-auto"
+      style={{
+        width: `${COLS * CELL_SIZE}px`,
+        height: `${ROWS * CELL_SIZE}px`,
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        gridTemplateColumns: `repeat(${COLS}, ${CELL_SIZE}px)`,
+        gridTemplateRows: `repeat(${ROWS}, ${CELL_SIZE}px)`,
+        maskImage:
+          "radial-gradient(ellipse 60% 60% at 50% 50%, black 25%, transparent 80%)",
+        WebkitMaskImage:
+          "radial-gradient(ellipse 60% 60% at 50% 50%, black 25%, transparent 80%)",
+      }}
+    >
+      {cells.map((index) => (
+        <div
+          key={index}
+          className="relative w-16 h-16 aspect-square border border-transparent transition-all duration-700 ease-out hover:duration-0 hover:border-light-green/70 hover:bg-light-green/15 hover:shadow-[0_0_24px_rgba(116,161,115,0.4)] group cursor-crosshair"
+        >
+          {/* Subtle intersection accent dot - invisible until hover */}
+          <div className="absolute -top-[1.5px] -left-[1.5px] w-[3px] h-[3px] rounded-full bg-transparent group-hover:bg-light-green group-hover:scale-150 transition-all duration-700 hover:duration-0" />
+        </div>
+      ))}
+    </div>
+  );
+});
 
+/*
+   OPTION 1: FLOATING WORDS MATRIX (COMMENTED OUT)
+   Kept for reference. Uncomment <BackgroundKeywords /> below to re-enable.
+*/
+const BackgroundKeywords = React.memo(function BackgroundKeywords() {
   const infiniteKeywords = useMemo(() => {
-    return createInfiniteArray(KEYWORDS, 50).map((keyword, index) => ({
+    return createInfiniteArray(KEYWORDS, 8).map((keyword, index) => ({
       text: keyword,
       size: getRandomSize(),
       id: `${keyword}-${index}`,
     }));
   }, []);
+
+  return (
+    <div
+      className="absolute -z-10 flex flex-wrap leading-relaxed select-none pointer-events-none"
+      style={{
+        width: "280vw",
+        height: "280vh",
+        top: "-90vh",
+        left: "-90vw",
+        padding: "15vh 15vw",
+      }}
+    >
+      {infiniteKeywords.map((item) => (
+        <motion.span
+          className={`text-transparent mr-1 sm:mr-2 mb-1 inline-block cursor-default text-xs sm:text-sm md:${item.size} pointer-events-auto`}
+          key={item.id}
+          style={{ willChange: "transform, color" }}
+          animate={{
+            color: "rgba(0,0,0,0.1)",
+            textShadow: "none",
+            scale: 1,
+          }}
+          whileHover={{
+            color: getRandomColor(),
+            textShadow: "0 0 16px currentColor, 0 0 32px currentColor",
+            scale: 1.1,
+            transition: { duration: 0 },
+          }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          {item.text}
+        </motion.span>
+      ))}
+      \n{" "}
+    </div>
+  );
+});
+
+// Isolated time display to avoid re-rendering entire hero tree every second
+const TimeDisplay = React.memo(function TimeDisplay() {
+  const currentTime = useCurrentTime();
+  return (
+    <div
+      className="absolute top-0 left-0 p-4 font-michroma text-[12px] z-30 opacity-50"
+      suppressHydrationWarning
+    >
+      {currentTime.toLocaleTimeString()}
+    </div>
+  );
+});
+
+// Isolated resolution display to avoid re-rendering hero on resize
+const ResolutionDisplay = React.memo(function ResolutionDisplay() {
+  const { resolution } = useScreenResolution();
+  return (
+    <div className="absolute top-0 right-0 p-4 font-michroma text-[12px] z-30 opacity-50">
+      {resolution}
+    </div>
+  );
+});
+
+export default function Hero() {
+  const { t } = useLanguage();
+
   return (
     <div className="relative h-screen pb-12 sm:pb-16 md:pb-24 w-full flex items-center justify-center overflow-hidden px-4 sm:px-6 md:px-8 text-background-light">
       <div className="pointer-events-none absolute bottom-0 left-0 w-full h-20 z-20 bg-gradient-to-b from-transparent to-background" />
-      <div className="absolute top-0 left-0 p-4 font-michroma text-[12px] z-30 opacity-50" suppressHydrationWarning>
-        {currentTime.toLocaleTimeString()}
-      </div>
-      <div className="absolute top-0 right-0 p-4 font-michroma text-[12px] z-30 opacity-50">
-        {resolution}
-      </div>
+      <TimeDisplay />
+      <ResolutionDisplay />
 
       <div
         style={{
@@ -179,39 +274,39 @@ export default function Hero() {
         }}
         className="text-left relative w-full max-w-6xl hidden md:block"
       >
-        {/* Top section with image and text */}
-        <div className="relative w-full pb-6 sm:pb-8 md:pb-12 flex justify-start gap-4">
+        {/* Top section with image and text - pass-through pointer events to allow grid hover */}
+        <div className="relative w-full pb-6 sm:pb-8 md:pb-12 flex justify-start gap-4 pointer-events-none">
           {/* Blur shadow - positioned behind */}
-          <div className="absolute left-0 w-1/2 h-[120px] sm:h-[150px] md:h-[180px] bg-black blur-[60px] sm:blur-[80px] -z-10 -translate-x-10 sm:-translate-x-20 translate-y-10 sm:translate-y-20"></div>
+          <div className="absolute left-0 w-1/2 h-[120px] sm:h-[150px] md:h-[180px] bg-black blur-[60px] sm:blur-[80px] -z-10 -translate-x-10 sm:-translate-x-20 translate-y-10 sm:translate-y-20 pointer-events-none"></div>
 
-          {/* Main image container - positioned above */}
-          <div className="relative duration-300 ease-in-out transition-all grayscale hover:grayscale-0 bg-white h-[120px] sm:h-[150px] md:h-[180px] w-1/2 z-20 mr-0">
+          {/* Main image container */}
+          <div className="relative duration-300 ease-in-out transition-all grayscale hover:grayscale-0 bg-white h-[120px] sm:h-[150px] md:h-[180px] w-1/2 z-20 mr-0 pointer-events-auto">
             <Image
               src="/images/iot.jpg"
               alt=""
               fill
               className="object-cover"
               style={{ transform: "-rotateZ(45deg)" }}
-               priority // This preloads the image
+              priority // This preloads the image
               placeholder="blur" // Shows blur while loading
               blurDataURL="data:image/jpeg;base64,..." // Tiny base64 image
             />
           </div>
 
-          <div className="font-bold text-lg sm:text-2xl md:text-3xl rotate-90 flex items-center text-background-light">
+          <div className="font-bold text-lg sm:text-2xl md:text-3xl rotate-90 flex items-center text-background-light pointer-events-none select-none">
             Your playground
           </div>
         </div>
 
-        {/* Welcome text */}
-        <p className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-transparent bg-gradient-to-r from-dark-green via-light-green to-light-green bg-clip-text font-bold z-20 mb-4 sm:mb-6 md:mb-8">
-          {t('welcome_title').split(' ').slice(0, 2).join(' ')}
+        {/* Welcome text - pass-through pointer events to allow grid hover */}
+        <p className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-transparent bg-gradient-to-r from-dark-green via-light-green to-light-green bg-clip-text font-bold z-20 mb-4 sm:mb-6 md:mb-8 pointer-events-none select-none">
+          {t("welcome_title")}
         </p>
 
-        {/* ITea Lab heading with icons */}
-        <div className="relative my-6 sm:my-8 md:my-10">
+        {/* ITea Lab heading with icons - pass-through pointer events so grid hovers beneath text */}
+        <div className="relative my-6 sm:my-8 md:my-10 pointer-events-none select-none">
           <motion.div
-            className="absolute h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 -top-2 sm:-top-3 -left-2 sm:-left-3"
+            className="absolute h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 -top-2 sm:-top-3 -left-2 sm:-left-3 pointer-events-none"
             animate={{ rotate: [0, 360, 360] }}
             transition={{
               duration: 3, // Total cycle time
@@ -225,7 +320,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div
-            className="absolute h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 -bottom-2 sm:-bottom-3 -left-2 sm:-left-3"
+            className="absolute h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 -bottom-2 sm:-bottom-3 -left-2 sm:-left-3 pointer-events-none"
             animate={{ rotate: [0, 360, 360] }}
             transition={{
               duration: 3,
@@ -239,7 +334,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div
-            className="absolute h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 -top-2 sm:-top-3 -right-2 sm:-right-3"
+            className="absolute h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 -top-2 sm:-top-3 -right-2 sm:-right-3 pointer-events-none"
             animate={{ rotate: [0, 360, 360] }}
             transition={{
               duration: 3,
@@ -253,7 +348,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div
-            className="absolute h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 -bottom-2 sm:-bottom-3 -right-2 sm:-right-3"
+            className="absolute h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 -bottom-2 sm:-bottom-3 -right-2 sm:-right-3 pointer-events-none"
             animate={{ rotate: [0, 360, 360] }}
             transition={{
               duration: 3,
@@ -266,31 +361,24 @@ export default function Hero() {
             <Icon className="text-white w-full h-full" />
           </motion.div>
 
-          <h1 className="text-6xl sm:text-8xl md:text-[120px] lg:text-[160px] xl:text-[200px] 2xl:text-[240px] font-michroma font-bold text-light-green leading-none break-words">
+          <h1 className="text-6xl sm:text-8xl md:text-[120px] lg:text-[160px] xl:text-[200px] 2xl:text-[240px] font-michroma font-bold text-light-green leading-none break-words pointer-events-none select-none">
             ITea Lab
           </h1>
         </div>
 
         {/* Bottom section with tagline and logo */}
-        <div className="relative w-full flex flex-col sm:flex-row items-start sm:items-end justify-end gap-4 sm:gap-6">
-          <div className="relative flex-shrink-0 text-right">
-            <div className="absolutebg-black blur-lg sm:blur-lg -translate-x-8 sm:-translate-x-12 md:-translate-x-20 translate-y-8 sm:translate-y-12 md:translate-y-20 z-0
-                            text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex-1 text-black text-right">
-                Where tech meets its quali-tea
-            </div>
-
-            <p className="relative text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex-1 text-background-light text-right z-20">
-              Where tech meets its quali-tea
-            </p>
-          </div>
+        <div className="relative w-full flex flex-col sm:flex-row items-start sm:items-end justify-end gap-4 sm:gap-6 pointer-events-none">
+          <p className="relative text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex-1 text-background-light text-right z-20 pointer-events-none select-none">
+            Where tech meets its quali-tea
+          </p>
 
           {/* Logo section */}
-          <div className="relative flex-shrink-0">
+          <div className="relative flex-shrink-0 pointer-events-auto">
             {/* Blur shadow */}
-            <div className="absolute w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] bg-black blur-lg sm:blur-xl -translate-x-8 sm:-translate-x-12 md:-translate-x-20 translate-y-8 sm:translate-y-12 md:translate-y-20 z-0"></div>
+            <div className="absolute w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] bg-black blur-lg sm:blur-xl -translate-x-8 sm:-translate-x-12 md:-translate-x-20 translate-y-8 sm:translate-y-12 md:translate-y-20 z-0 pointer-events-none"></div>
 
             {/* Main logo container */}
-            <div className="relative p-2 sm:p-3 md:p-4 hover:p-0 duration-300 ease-in-out transition-all hover:scale-110 bg-white w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] z-20">
+            <div className="relative p-2 sm:p-3 md:p-4 hover:p-0 duration-300 ease-in-out transition-all hover:scale-110 bg-white w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] z-20 pointer-events-auto">
               <Image
                 src="/images/icon_transparent.png"
                 alt="Hero Image"
@@ -305,41 +393,21 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Background keywords */}
-        <div
-          className="absolute -z-10 flex flex-wrap leading-relaxed"
-          style={{
-            width: "300vw",
-            height: "300vh",
-            top: "-100vh",
-            left: "-100vw",
-            padding: "20vh 20vw",
-          }}
-        >
-          {/* {infiniteKeywords.map((item) => (
-            <motion.span
-              className={`text-transparent mr-1 sm:mr-2 mb-1 inline-block cursor-default text-xs sm:text-sm md:${item.size}`}
-              key={item.id}
-              animate={{
-                color: "rgba(0,0,0,0.1)",
-                textShadow: "none",
-                scale: 1,
-              }}
+        {/* Option 2: 3D Interactive Isometric Grid (Invisible until hover, true square cells) */}
+        <Interactive3DGrid />
 
-            >
-              {item.text}
-            </motion.span>
-          ))} */}
-        </div>
+        {/* Floating Words Matrix (Commented out) */}
+        {/* <BackgroundKeywords /> */}
       </div>
+
       <div className="block md:hidden relative">
-              <Image
-                src="/images/icon_transparent.png"
-                alt="Hero Image"
-                fill
-                className="object-cover hidden"
-                style={{ transform: "rotate(45deg)" }}
-              />
+        <Image
+          src="/images/icon_transparent.png"
+          alt="Hero Image"
+          fill
+          className="object-cover hidden"
+          style={{ transform: "rotate(45deg)" }}
+        />
         {/* ITea Lab heading with icons */}
         <div className="relative my-6 sm:my-8 md:my-10">
           <motion.div
@@ -405,9 +473,9 @@ export default function Hero() {
 
         {/* Bottom section with tagline and logo */}
         <div className="relative w-full flex flex-col sm:flex-row items-start sm:items-end justify-end gap-4 sm:gap-6">
-            <p className="relative text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex-1 text-background-light text-right z-20">
-              Where tech meets its quali-tea
-            </p>
+          <p className="relative text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex-1 text-background-light text-right z-20">
+            Where tech meets its quali-tea
+          </p>
 
           {/* Logo section */}
           <div className="relative flex-shrink-0">

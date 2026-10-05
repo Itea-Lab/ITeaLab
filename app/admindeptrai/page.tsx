@@ -50,6 +50,7 @@ const Page = () => {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<TabType>("News");
   const [actionLoading, setActionLoading] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -372,9 +373,16 @@ const Page = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    try {
+      setLoggingOut(true);
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      showMessage("error", "Failed to log out");
+      setLoggingOut(false);
+    }
   };
 
   return (
@@ -403,9 +411,18 @@ const Page = () => {
             </button>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 text-sm sm:text-base text-gray-300 hover:text-red-400 border border-zinc-800 hover:border-red-800/60 bg-zinc-900/80 px-4 py-2 rounded-lg transition-colors cursor-pointer"
+              disabled={loggingOut}
+              className="flex items-center gap-2 text-sm sm:text-base text-gray-300 hover:text-red-400 border border-zinc-800 hover:border-red-800/60 bg-zinc-900/80 px-4 py-2 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <LogOut size={18} /> Logout
+              {loggingOut ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" /> Logging out...
+                </>
+              ) : (
+                <>
+                  <LogOut size={18} /> Logout
+                </>
+              )}
             </button>
           </div>
         </div>
