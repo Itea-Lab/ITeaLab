@@ -8,8 +8,8 @@ export default defineConfig({
     compatibilityFlags: ['nodejs_compat'],
     assets: { notFoundHandling: 'none' },
     domains: ['itealab.org'],
-    workersDev: true,
-    previewUrls: true,
+    workersDev: false,
+    previewUrls: false,
     observability: {
       enabled: true,
       logs: {
