@@ -58,7 +58,7 @@ const translations = {
     'join_us': 'Join Us',
     
     // Hero Section
-    'welcome_title': 'Welcome to ITeaLab',
+    'welcome_title': 'Welcome to',
     'welcome_subtitle': 'Innovation through Technology and Education',
     'welcome_description': 'We are a forward-thinking laboratory focused on advancing technology and education through innovative research and collaborative projects.',
     
@@ -156,7 +156,6 @@ const translations = {
     'itea_lab_news': 'ITEA LAB NEWS',
     'news_subtitle': 'Stay updated with the latest happenings at our community.',
     'news_title_1': 'ITea Lab Talents Build Chongluadao.vn AI Tool, Gain National Recognition',
-    'news_title_2': 'ITea Lab Partners with 3DIoT for IoT and Software Development Collaboration',
     
     // Footer Section
     'footer_message': 'We build digital solutions that help communities navigate the tech landscape',
@@ -198,7 +197,7 @@ const translations = {
     'join_us': 'Tham gia với chúng tôi',
     
     // Hero Section
-    'welcome_title': 'Chào mừng đến với ITeaLab',
+    'welcome_title': 'Chào mừng đến với',
     'welcome_subtitle': 'Đổi mới thông qua Công nghệ và Giáo dục',
     'welcome_description': 'Chúng tôi là một phòng thí nghiệm tiến bộ tập trung vào việc phát triển công nghệ và giáo dục thông qua nghiên cứu đổi mới và các dự án hợp tác.',
     
@@ -230,9 +229,8 @@ const translations = {
     // About Section Details
     'about_us': 'Về chúng tôi',
     'our_vision': 'Tầm nhìn của chúng tôi',
-    'about_description_long': 'ITea Lab là một cộng đồng được xây dựng từ một nhóm sinh viên Khoa học Máy tính tại Swinburne Vietnam, tận tâm với nghiên cứu và phát triển công nghệ tiên tiến.',
-    'vision_description': 'Mở rộng cộng đồng và nuôi dưỡng một không gian bao trọn nơi sinh viên Khoa học Máy tính có thể khám phá, nghiên cứu và trao đổi kiến thức, thúc đẩy kết nối giữa những tâm hồn CS tò mò và đam mê.',
-    
+    'about_description_long': 'ITea Lab là một cộng đồng được lập nên từ một nhóm sinh viên ngành Khoa học Máy tính tại Swinburne Vietnam, những thành viên có đam mê với nghiên cứu và phát triển phần mềm.',
+    'vision_description': 'Mở rộng cộng đồng và tạo nên một không gian bao trọn nơi sinh viên Khoa học Máy tính có thể khám phá, nghiên cứu và trao đổi kiến thức, thúc đẩy kết nối giữa những tâm hồn thích tò mò và đam mê.',
     // Timeline
     'conception': 'Khái niệm',
     'conception_desc': 'Ý tưởng về một hiệp hội dành cho sinh viên CS được đề xuất bởi cô Pascale Quester',
@@ -271,7 +269,7 @@ const translations = {
     'docker_workshop': 'Workshop Docker',
     
     // Join Us Section
-    'drop_us_line': 'LIÊN HỆ VỚI CHÚNG TÔI',
+    'drop_us_line': 'KẾT NỐI VỚI LAB',
     'introduce_yourself': 'Giới thiệu bản thân và sự nhiệt tình của bạn. Chúng tôi rất muốn tìm hiểu về hành trình sáng tạo của bạn và nguồn cảm hứng đằng sau công việc của bạn.',
     'your_name': 'Tên của bạn',
     'name_placeholder': 'Cho chúng tôi biết nên gọi bạn là gì',
@@ -294,14 +292,13 @@ const translations = {
     
     // News Section
     'itea_lab_news': 'TIN TỨC ITEA LAB',
-    'news_subtitle': 'Cập nhật những diễn biến mới nhất tại cộng đồng của chúng tôi.',
+    'news_subtitle': 'Cập nhật những diễn biến mới nhất của lab',
     'news_title_1': 'Tài năng ITea Lab xây dựng công cụ AI Chongluadao.vn, nhận được sự công nhận toàn quốc',
-    'news_title_2': 'ITea Lab hợp tác với 3DIoT cho sự cộng tác phát triển IoT và phần mềm',
     
     // Footer Section
-    'footer_message': 'Chúng tôi xây dựng các giải pháp kỹ thuật số giúp cộng đồng điều hướng bối cảnh công nghệ',
+    'footer_message': 'Chúng tôi xây dựng các dự án giúp cộng đồng điều hướng bối cảnh công nghệ',
     'more_information': 'Thông tin thêm:',
-    'solutions': 'Giải pháp',
+    'solutions': 'Dự án',
     'ecosystem': 'Hệ sinh thái',
     'company': 'Công ty',
     'our_community': 'Cộng đồng của chúng tôi',
@@ -338,7 +335,7 @@ const translations = {
     'join_us': '参加する',
     
     // Hero Section
-    'welcome_title': 'ITeaLabへようこそ',
+    'welcome_title': 'ようこそ',
     'welcome_subtitle': '技術と教育を通じたイノベーション',
     'welcome_description': '私たちは革新的な研究と協力的なプロジェクトを通じて技術と教育の発展に焦点を当てた先進的な研究室です。',
     
@@ -436,7 +433,6 @@ const translations = {
     'itea_lab_news': 'ITEA LABニュース',
     'news_subtitle': 'コミュニティの最新の出来事をお知らせします。',
     'news_title_1': 'ITea Labの才能がChongluadao.vn AIツールを構築し、全国的な認知を獲得',
-    'news_title_2': 'ITea LabがIoTとソフトウェア開発の協力で3DIoTとパートナーシップ',
     
     // Footer Section
     'footer_message': 'コミュニティがテクノロジーの景観をナビゲートするのを支援するデジタルソリューションを構築しています',

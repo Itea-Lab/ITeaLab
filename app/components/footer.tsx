@@ -16,10 +16,12 @@ const Footer = () => {
           {/* Left section - Brand Message */}
           <div className="sm:col-span-2 lg:col-span-2">
             <h2 className="text-xl sm:text-2xl lg:text-2xl xl:text-3xl font-bold text-light-green leading-tight mb-4 sm:mb-6">
-              {t('footer_message')}
+              {t("footer_message")}
             </h2>
             <div className="space-y-2">
-              <p className="font-medium text-sm sm:text-base">{t('more_information')}</p>
+              <p className="font-medium text-sm sm:text-base">
+                {t("more_information")}
+              </p>
               <Link
                 href="mailto:contact.contact.itealab@gmail.com"
                 className="underline hover:text-[#74A173] transition-colors text-sm sm:text-base"
@@ -56,40 +58,50 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Workshop Column */}
+          {/* Connect Column */}
           <div className="lg:col-span-1">
             <h3 className="text-lg sm:text-xl font-bold text-light-green mb-4 sm:mb-6">
-              Workshop
+              Connect
             </h3>
             <div className="space-y-3 sm:space-y-4">
               <Link
                 href="https://github.com/Itea-Lab"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block hover:text-[#74A173] transition-colors text-sm sm:text-base"
               >
-                Git & GitHub workshop
+                GitHub
               </Link>
               <Link
                 href="https://www.facebook.com/ITeaLabTeam"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block hover:text-[#74A173] transition-colors text-sm sm:text-base"
               >
-                Amazon Q workshop
+                Facebook
               </Link>
               <Link
                 href="https://www.linkedin.com/company/itea-lab/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block hover:text-[#74A173] transition-colors text-sm sm:text-base"
               >
-                Docker workshop
+                LinkedIn
               </Link>
             </div>
           </div>
 
-          {/* Office Column */}
+          {/* Campus Column */}
           <div className="lg:col-span-1">
-            <h3 className="text-lg sm:text-xl font-bold text-light-green mb-4 sm:mb-6">Office</h3>
+            <h3 className="text-lg sm:text-xl font-bold text-light-green mb-4 sm:mb-6">
+              Location
+            </h3>
             <div className="space-y-3 sm:space-y-4">
-              <a 
-              target="_blank"
-              href="https://maps.app.goo.gl/Y1r1YzVi6rEpftYn7">
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://maps.app.goo.gl/Y1r1YzVi6rEpftYn7"
+              >
                 Visit now
               </a>
             </div>
@@ -134,7 +146,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center pt-6 sm:pt-8 border-t border-gray-200 gap-4 lg:gap-0">
           <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4 lg:mb-0">
-            <p className="text-sm sm:text-base">{t('copyright')}</p>
+            <p className="text-sm sm:text-base">{t("copyright")}</p>
             <div className="flex items-center space-x-2">
               <div className="p-1 bg-background-light rounded-full">
                 <Image
@@ -149,7 +161,16 @@ const Footer = () => {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 lg:space-x-8 text-sm sm:text-base">
-            Made with love for ITea Lab - <span className="mx-1"><a href="https://leviron.me" className="text-light-green py-2 hover:underline" target="_blank">Leviron</a></span>
+            Made with love for ITea Lab -{" "}
+            <span className="mx-1">
+              <a
+                href="https://leviron.me"
+                className="text-light-green py-2 hover:underline"
+                target="_blank"
+              >
+                Leviron
+              </a>
+            </span>
           </div>
         </div>
       </div>

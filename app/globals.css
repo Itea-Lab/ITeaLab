@@ -1,47 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  --background: #1a1b1a;
-  --foreground: #171717;
+    --background: #1a1b1a;
+    --foreground: #171717;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-ubuntu: var(--font-ubuntu);
-  --font-michroma: var(--font-michroma);
-  --color-background-secondary: #36393e;
-  --color-dark-green: #004243;
-  --color-darkest-green: #0D1F21;
-  --color-light-green: #74A173;
-  --color-background-light: #FAF6E9;
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+    --font-ubuntu: var(--font-ubuntu);
+    --font-michroma: var(--font-michroma);
+    --color-background-secondary: #36393e;
+    --color-dark-green: #004243;
+    --color-darkest-green: #0d1f21;
+    --color-light-green: #74a173;
+    --color-background-light: #faf6e9;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1a1b1a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #1a1b1a;
+        --foreground: #ededed;
+    }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family:  var(--font-ubuntu), Arial, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-ubuntu), Arial, sans-serif;
 }
 
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
-/* Hide default cursor globally */
-* {
-  cursor: none !important;
+/* Hide default cursor only when custom cursor is active on the page */
+html.custom-cursor-active,
+html.custom-cursor-active * {
+    cursor: none !important;
 }
 
-/* Ensure all interactive elements also hide cursor */
-a, button, input, textarea, select, [role="button"], [tabindex] {
-  cursor: none !important;
+@keyframes slideLeft {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }

@@ -1,18 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Edit, Trash2, Plus, X, Check } from "lucide-react";
-import CustomCursor from "../components/ui/custom-cursor";
+import { ArrowLeft, Edit, Trash2, Plus, X, Check, LogOut, RefreshCw, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
+import { supabase } from "../components/lib/supabase";
 import { uploadFile } from "../components/uploadFile";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_* env vars");
-}
-const supabase = createClient(supabaseUrl ?? "", supabaseAnonKey ?? "");
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface NewsItem {
   id?: number;
@@ -52,15 +46,29 @@ interface JoinRequest {
 type TabType = "News" | "Workshops" | "Applications";
 
 const Page = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<TabType>("News");
-  const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
 
-  // News state
-  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  // News TanStack Query (cached, instant tab switch)
+  const { data: newsItems = [], isLoading: loadingNews, isFetching: fetchingNews } = useQuery<NewsItem[]>({
+    queryKey: ["admin", "news"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("news")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data || []) as NewsItem[];
+    },
+  });
+
   const [newsModalOpen, setNewsModalOpen] = useState(false);
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
   const [newsFormData, setNewsFormData] = useState<NewsItem>({
@@ -73,12 +81,21 @@ const Page = () => {
   });
   const [newsImageFile, setNewsImageFile] = useState<File | null>(null);
 
-  // Workshops state
-  const [workshops, setWorkshops] = useState<WorkshopItem[]>([]);
+  // Workshops TanStack Query (cached, instant tab switch)
+  const { data: workshops = [], isLoading: loadingWorkshops, isFetching: fetchingWorkshops } = useQuery<WorkshopItem[]>({
+    queryKey: ["admin", "workshops"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("workshops")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data || []) as WorkshopItem[];
+    },
+  });
+
   const [workshopModalOpen, setWorkshopModalOpen] = useState(false);
-  const [editingWorkshop, setEditingWorkshop] = useState<WorkshopItem | null>(
-    null,
-  );
+  const [editingWorkshop, setEditingWorkshop] = useState<WorkshopItem | null>(null);
   const [workshopFormData, setWorkshopFormData] = useState<WorkshopItem>({
     name: "",
     url: "",
@@ -88,70 +105,27 @@ const Page = () => {
   });
   const [workshopImageFile, setWorkshopImageFile] = useState<File | null>(null);
 
-  // Applications state
-  const [applications, setApplications] = useState<JoinRequest[]>([]);
+  // Applications TanStack Query (cached, instant tab switch)
+  const { data: applications = [], isLoading: loadingApps, isFetching: fetchingApps } = useQuery<JoinRequest[]>({
+    queryKey: ["admin", "applications"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("join_requests")
+        .select("*")
+        .order("submitted_at", { ascending: false });
+      if (error) throw error;
+      return (data || []) as JoinRequest[];
+    },
+  });
+
   const [appModalOpen, setAppModalOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<JoinRequest | null>(null);
 
   // Delete confirmation
   const [deleteConfirm, setDeleteConfirm] = useState<{
-    type: "news" | "workshop";
+    type: "news" | "workshop" | "application";
     id: number;
   } | null>(null);
-
-  useEffect(() => {
-    if (activeTab === "News") fetchNews();
-    else if (activeTab === "Workshops") fetchWorkshops();
-    else if (activeTab === "Applications") fetchApplications();
-  }, [activeTab]);
-
-  // Fetch News
-  const fetchNews = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("news")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) {
-      showMessage("error", "Failed to load news");
-      console.error(error);
-    } else {
-      setNewsItems(data || []);
-    }
-    setLoading(false);
-  };
-
-  // Fetch Workshops
-  const fetchWorkshops = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("workshops")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) {
-      showMessage("error", "Failed to load workshops");
-      console.error(error);
-    } else {
-      setWorkshops(data || []);
-    }
-    setLoading(false);
-  };
-
-  // Fetch Applications
-  const fetchApplications = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("join_requests")
-      .select("*")
-      .order("submitted_at", { ascending: false });
-    if (error) {
-      showMessage("error", "Failed to load applications");
-      console.error(error);
-    } else {
-      setApplications(data || []);
-    }
-    setLoading(false);
-  };
 
   // Show message
   const showMessage = (type: "success" | "error", text: string) => {
@@ -165,7 +139,7 @@ const Page = () => {
       showMessage("error", "Title and URL are required");
       return;
     }
-    setLoading(true);
+    setActionLoading(true);
 
     // Upload image to Cloudinary if file is selected
     let imageUrl = newsFormData.image;
@@ -176,7 +150,7 @@ const Page = () => {
       } catch (error) {
         showMessage("error", "Failed to upload image");
         console.error(error);
-        setLoading(false);
+        setActionLoading(false);
         return;
       }
     }
@@ -189,14 +163,15 @@ const Page = () => {
       showMessage("success", "News item created successfully");
       setNewsModalOpen(false);
       resetNewsForm();
-      fetchNews();
+      queryClient.invalidateQueries({ queryKey: ["admin", "news"] });
+      queryClient.invalidateQueries({ queryKey: ["news"] });
     }
-    setLoading(false);
+    setActionLoading(false);
   };
 
   const handleUpdateNews = async () => {
     if (!editingNews?.id) return;
-    setLoading(true);
+    setActionLoading(true);
 
     // Upload image to Cloudinary if new file is selected
     let imageUrl = newsFormData.image;
@@ -207,7 +182,7 @@ const Page = () => {
       } catch (error) {
         showMessage("error", "Failed to upload image");
         console.error(error);
-        setLoading(false);
+        setActionLoading(false);
         return;
       }
     }
@@ -226,13 +201,14 @@ const Page = () => {
       setNewsModalOpen(false);
       setEditingNews(null);
       resetNewsForm();
-      fetchNews();
+      queryClient.invalidateQueries({ queryKey: ["admin", "news"] });
+      queryClient.invalidateQueries({ queryKey: ["news"] });
     }
-    setLoading(false);
+    setActionLoading(false);
   };
 
   const handleDeleteNews = async (id: number) => {
-    setLoading(true);
+    setActionLoading(true);
     const { error } = await supabase.from("news").delete().eq("id", id);
     if (error) {
       showMessage("error", "Failed to delete news item");
@@ -240,9 +216,10 @@ const Page = () => {
     } else {
       showMessage("success", "News item deleted successfully");
       setDeleteConfirm(null);
-      fetchNews();
+      queryClient.invalidateQueries({ queryKey: ["admin", "news"] });
+      queryClient.invalidateQueries({ queryKey: ["news"] });
     }
-    setLoading(false);
+    setActionLoading(false);
   };
 
   const resetNewsForm = () => {
@@ -263,7 +240,7 @@ const Page = () => {
       showMessage("error", "Name and URL are required");
       return;
     }
-    setLoading(true);
+    setActionLoading(true);
 
     // Upload image to Cloudinary if file is selected
     let imageUrl = workshopFormData.image;
@@ -274,7 +251,7 @@ const Page = () => {
       } catch (error) {
         showMessage("error", "Failed to upload image");
         console.error(error);
-        setLoading(false);
+        setActionLoading(false);
         return;
       }
     }
@@ -289,14 +266,15 @@ const Page = () => {
       showMessage("success", "Workshop created successfully");
       setWorkshopModalOpen(false);
       resetWorkshopForm();
-      fetchWorkshops();
+      queryClient.invalidateQueries({ queryKey: ["admin", "workshops"] });
+      queryClient.invalidateQueries({ queryKey: ["workshops"] });
     }
-    setLoading(false);
+    setActionLoading(false);
   };
 
   const handleUpdateWorkshop = async () => {
     if (!editingWorkshop?.id) return;
-    setLoading(true);
+    setActionLoading(true);
 
     // Upload image to Cloudinary if new file is selected
     let imageUrl = workshopFormData.image;
@@ -307,7 +285,7 @@ const Page = () => {
       } catch (error) {
         showMessage("error", "Failed to upload image");
         console.error(error);
-        setLoading(false);
+        setActionLoading(false);
         return;
       }
     }
@@ -326,13 +304,14 @@ const Page = () => {
       setWorkshopModalOpen(false);
       setEditingWorkshop(null);
       resetWorkshopForm();
-      fetchWorkshops();
+      queryClient.invalidateQueries({ queryKey: ["admin", "workshops"] });
+      queryClient.invalidateQueries({ queryKey: ["workshops"] });
     }
-    setLoading(false);
+    setActionLoading(false);
   };
 
   const handleDeleteWorkshop = async (id: number) => {
-    setLoading(true);
+    setActionLoading(true);
     const { error } = await supabase.from("workshops").delete().eq("id", id);
     if (error) {
       showMessage("error", "Failed to delete workshop");
@@ -340,9 +319,10 @@ const Page = () => {
     } else {
       showMessage("success", "Workshop deleted successfully");
       setDeleteConfirm(null);
-      fetchWorkshops();
+      queryClient.invalidateQueries({ queryKey: ["admin", "workshops"] });
+      queryClient.invalidateQueries({ queryKey: ["workshops"] });
     }
-    setLoading(false);
+    setActionLoading(false);
   };
 
   const resetWorkshopForm = () => {
@@ -353,7 +333,7 @@ const Page = () => {
   // APPLICATION UPDATE OPERATION
   const handleUpdateApplication = async () => {
     if (!editingApp?.id) return;
-    setLoading(true);
+    setActionLoading(true);
     const updateData = {
       status: editingApp.status,
       processed_at:
@@ -370,23 +350,82 @@ const Page = () => {
       showMessage("success", "Application updated successfully");
       setAppModalOpen(false);
       setEditingApp(null);
-      fetchApplications();
+      queryClient.invalidateQueries({ queryKey: ["admin", "applications"] });
     }
-    setLoading(false);
+    setActionLoading(false);
+  };
+
+  const handleDeleteApplication = async (id: number) => {
+    setActionLoading(true);
+    const { error } = await supabase
+      .from("join_requests")
+      .delete()
+      .eq("id", id);
+    if (error) {
+      showMessage("error", "Failed to delete application");
+      console.error(error);
+    } else {
+      showMessage("success", "Application deleted successfully");
+      setDeleteConfirm(null);
+      queryClient.invalidateQueries({ queryKey: ["admin", "applications"] });
+    }
+    setActionLoading(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      setLoggingOut(true);
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      showMessage("error", "Failed to log out");
+      setLoggingOut(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background text-background-light p-6 sm:p-12">
-      <CustomCursor />
-
       {/* Header */}
       <div className="max-w-7xl mx-auto">
-        <Link
-          href="/"
-          className="flex gap-2 text-xl sm:text-2xl items-center hover:text-light-green transition-colors"
-        >
-          <ArrowLeft /> Back
-        </Link>
+        <div className="flex justify-between items-center mb-6">
+          <Link
+            href="/"
+            className="flex gap-2 text-xl sm:text-2xl items-center hover:text-light-green transition-colors"
+          >
+            <ArrowLeft /> Back
+          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                if (activeTab === "News") queryClient.invalidateQueries({ queryKey: ["admin", "news"] });
+                else if (activeTab === "Workshops") queryClient.invalidateQueries({ queryKey: ["admin", "workshops"] });
+                else queryClient.invalidateQueries({ queryKey: ["admin", "applications"] });
+              }}
+              title="Refresh current tab"
+              className="flex items-center gap-2 text-sm text-gray-300 hover:text-light-green border border-zinc-800 hover:border-zinc-700 bg-zinc-900/80 px-3 py-2 rounded-lg transition-colors cursor-pointer"
+            >
+              <RefreshCw size={16} className={(fetchingNews || fetchingWorkshops || fetchingApps) ? "animate-spin text-light-green" : ""} />
+              Refresh
+            </button>
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="flex items-center gap-2 text-sm sm:text-base text-gray-300 hover:text-red-400 border border-zinc-800 hover:border-red-800/60 bg-zinc-900/80 px-4 py-2 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loggingOut ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" /> Logging out...
+                </>
+              ) : (
+                <>
+                  <LogOut size={18} /> Logout
+                </>
+              )}
+            </button>
+          </div>
+        </div>
 
         {/* Tabs */}
         <div className="flex gap-4 sm:gap-8 mt-8 sm:mt-12 border-b border-zinc-800">
@@ -437,8 +476,10 @@ const Page = () => {
                 </button>
               </div>
 
-              {loading ? (
-                <p>Loading...</p>
+              {loadingApps ? (
+                <div className="py-12 flex justify-center items-center gap-3 text-gray-400 font-michroma text-sm">
+                  <Loader2 className="animate-spin text-light-green" size={20} /> Loading applications...
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
@@ -530,8 +571,10 @@ const Page = () => {
                 </button>
               </div>
 
-              {loading ? (
-                <p>Loading...</p>
+              {loadingApps ? (
+                <div className="py-12 flex justify-center items-center gap-3 text-gray-400 font-michroma text-sm">
+                  <Loader2 className="animate-spin text-light-green" size={20} /> Loading applications...
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
@@ -608,13 +651,13 @@ const Page = () => {
           {activeTab === "Applications" && (
             <div>
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">
-                  Applications (Read & Update Only)
-                </h2>
+                <h2 className="text-2xl font-bold">Applications</h2>
               </div>
 
-              {loading ? (
-                <p>Loading...</p>
+              {loadingApps ? (
+                <div className="py-12 flex justify-center items-center gap-3 text-gray-400 font-michroma text-sm">
+                  <Loader2 className="animate-spin text-light-green" size={20} /> Loading applications...
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
@@ -664,15 +707,31 @@ const Page = () => {
                               : "-"}
                           </td>
                           <td className="p-3">
-                            <button
-                              onClick={() => {
-                                setEditingApp(item);
-                                setAppModalOpen(true);
-                              }}
-                              className="p-2 bg-black rounded hover:bg-black-700"
-                            >
-                              <Edit size={16} />
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setEditingApp(item);
+                                  setAppModalOpen(true);
+                                }}
+                                className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded text-gray-300 transition-colors"
+                                title="Edit Status"
+                              >
+                                <Edit size={16} />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  item.id &&
+                                  setDeleteConfirm({
+                                    type: "application",
+                                    id: item.id,
+                                  })
+                                }
+                                className="p-2 bg-red-600/80 hover:bg-red-600 text-white rounded transition-colors"
+                                title="Delete Application"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -790,14 +849,24 @@ const Page = () => {
               <div className="flex gap-4 mt-6">
                 <button
                   onClick={editingNews ? handleUpdateNews : handleCreateNews}
-                  disabled={loading}
-                  className="flex items-center gap-2 bg-light-green text-background px-6 py-3 rounded hover:opacity-90 disabled:opacity-50"
+                  disabled={actionLoading}
+                  className="flex items-center gap-2 bg-light-green text-background px-6 py-3 rounded hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-medium"
                 >
-                  <Check size={20} /> {editingNews ? "Update" : "Create"}
+                  {actionLoading ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      {editingNews ? "Updating..." : "Creating..."}
+                    </>
+                  ) : (
+                    <>
+                      <Check size={20} /> {editingNews ? "Update" : "Create"}
+                    </>
+                  )}
                 </button>
                 <button
+                  disabled={actionLoading}
                   onClick={() => setNewsModalOpen(false)}
-                  className="px-6 py-3 bg-gray-300 text-background rounded hover:bg-gray-400"
+                  className="px-6 py-3 bg-gray-300 text-background rounded hover:bg-gray-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer font-medium"
                 >
                   Cancel
                 </button>
@@ -911,14 +980,24 @@ const Page = () => {
                       ? handleUpdateWorkshop
                       : handleCreateWorkshop
                   }
-                  disabled={loading}
-                  className="flex items-center gap-2 bg-light-green text-background px-6 py-3 rounded hover:opacity-90 disabled:opacity-50"
+                  disabled={actionLoading}
+                  className="flex items-center gap-2 bg-light-green text-background px-6 py-3 rounded hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-medium"
                 >
-                  <Check size={20} /> {editingWorkshop ? "Update" : "Create"}
+                  {actionLoading ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      {editingWorkshop ? "Updating..." : "Creating..."}
+                    </>
+                  ) : (
+                    <>
+                      <Check size={20} /> {editingWorkshop ? "Update" : "Create"}
+                    </>
+                  )}
                 </button>
                 <button
+                  disabled={actionLoading}
                   onClick={() => setWorkshopModalOpen(false)}
-                  className="px-6 py-3 bg-gray-300 text-background rounded hover:bg-gray-400"
+                  className="px-6 py-3 bg-gray-300 text-background rounded hover:bg-gray-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer font-medium"
                 >
                   Cancel
                 </button>
@@ -978,14 +1057,23 @@ const Page = () => {
               <div className="flex gap-4 mt-6">
                 <button
                   onClick={handleUpdateApplication}
-                  disabled={loading}
-                  className="flex items-center gap-2 bg-light-green text-background px-6 py-3 rounded hover:opacity-90 disabled:opacity-50"
+                  disabled={actionLoading}
+                  className="flex items-center gap-2 bg-light-green text-background px-6 py-3 rounded hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-medium"
                 >
-                  <Check size={20} /> Update Status
+                  {actionLoading ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" /> Updating Status...
+                    </>
+                  ) : (
+                    <>
+                      <Check size={20} /> Update Status
+                    </>
+                  )}
                 </button>
                 <button
+                  disabled={actionLoading}
                   onClick={() => setAppModalOpen(false)}
-                  className="px-6 py-3 bg-gray-300 text-background rounded hover:bg-gray-400"
+                  className="px-6 py-3 bg-gray-300 text-background rounded hover:bg-gray-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer font-medium"
                 >
                   Cancel
                 </button>
@@ -1006,19 +1094,30 @@ const Page = () => {
             </p>
             <div className="flex gap-4">
               <button
-                onClick={() =>
-                  deleteConfirm.type === "news"
-                    ? handleDeleteNews(deleteConfirm.id)
-                    : handleDeleteWorkshop(deleteConfirm.id)
-                }
-                disabled={loading}
-                className="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
+                onClick={() => {
+                  if (deleteConfirm.type === "news") {
+                    handleDeleteNews(deleteConfirm.id);
+                  } else if (deleteConfirm.type === "workshop") {
+                    handleDeleteWorkshop(deleteConfirm.id);
+                  } else {
+                    handleDeleteApplication(deleteConfirm.id);
+                  }
+                }}
+                disabled={actionLoading}
+                className="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer font-medium"
               >
-                Delete
+                {actionLoading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
               </button>
               <button
+                disabled={actionLoading}
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 bg-gray-300 text-background px-4 py-2 rounded hover:bg-gray-400"
+                className="flex-1 bg-gray-300 text-background px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer font-medium"
               >
                 Cancel
               </button>

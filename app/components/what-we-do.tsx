@@ -1,20 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { ShapeIcon } from "./ui/shapeicon";
 import { Icon } from "./ui/plus-icon";
 import ImageSlider from "./ui/image-slider";
 import { useLanguage } from "../contexts/LanguageContext";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "./lib/supabase";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  // fail gracefully in the client and avoid leaking secrets to console
-  console.error("Missing NEXT_PUBLIC_SUPABASE_* env vars");
-}
-const supabase = createClient(supabaseUrl ?? "", supabaseAnonKey ?? "");
 interface workshopItem {
   id?: number;
   name: string;
@@ -25,30 +19,27 @@ interface workshopItem {
   created_at?: string;
   updated_at?: string;
 }
+
 const Community = () => {
   const { t } = useLanguage();
-  const [workshops, setWorkshops] = useState<workshopItem[]>([]);
   const maxItemToShow = 3;
-  
-  useEffect(() => {
-    const fetchWorkshops = async () => {
-      const { data, error } = await supabase.from("workshops").select("*").order('created_at', { ascending: false });
+
+  const { data: workshops = [], isLoading } = useQuery<workshopItem[]>({
+    queryKey: ["workshops"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("workshops")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) {
         console.error("Error fetching workshops:", error);
-        return;
+        throw error;
       }
 
-      if (!Array.isArray(data)) {
-        console.error("Unexpected workshops response:", data);
-        return;
-      }
-
-      setWorkshops(data as workshopItem[]);
-    };
-
-    fetchWorkshops();
-  }, []);
+      return (data || []) as workshopItem[];
+    },
+  });
 
   return (
     <div
@@ -91,41 +82,69 @@ const Community = () => {
               {t("workshops")}
             </h2>
 
-            {/* Workshop Links */}
-            <div className="flex flex-col gap-6 sm:gap-8 lg:justify-start">
-              {workshops.slice(0, maxItemToShow).map((workshop, index) => (
-                <div key={index} className="relative group">
-                  {/* Corner Icons */}
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-4 transition-all duration-300 ease-out -ml-6 sm:-ml-8 md:-ml-10 lg:-ml-12">
-                    <ShapeIcon
-                      shape={workshop.shape}
-                      className="h-16 w-16 sm:h-32 sm:w-32"
-                    />
+            {/* Workshop Links / Loading */}
+            {isLoading ? (
+              <div className="flex flex-col gap-6 sm:gap-8 lg:justify-start">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="relative group animate-pulse">
+                    <div className="relative z-0 flex items-center justify-between p-4 sm:p-6 bg-green-950/5 border border-green-800/20 w-full">
+                      <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -left-2 sm:-left-3 text-black/30" />
+                      <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -bottom-2 sm:-bottom-3 -left-2 sm:-left-3 text-black/30" />
+                      <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -right-2 sm:-right-3 text-black/30" />
+                      <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -bottom-2 sm:-bottom-3 -right-2 sm:-right-3 text-black/30" />
+                      <div className="h-6 bg-black/10 rounded w-2/5 animate-pulse" />
+                      <div className="h-4 w-12 bg-black/10 rounded animate-pulse" />
+                    </div>
                   </div>
+                ))}
+              </div>
+            ) : workshops.length === 0 ? (
+              <div className="text-gray-500 py-6 text-sm">
+                No workshops scheduled at the moment.
+              </div>
+            ) : (
+              <div className="flex flex-col gap-6 sm:gap-8 lg:justify-start">
+                {workshops.slice(0, maxItemToShow).map((workshop, index) => (
+                  <div key={index} className="relative group">
+                    {/* Corner Icons */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-4 transition-all duration-300 ease-out -ml-6 sm:-ml-8 md:-ml-10 lg:-ml-12">
+                      <ShapeIcon
+                        shape={workshop.shape}
+                        className="h-16 w-16 sm:h-32 sm:w-32"
+                      />
+                    </div>
 
-                  <a
-                    href={workshop.url}
-                    target="_blank"
-                    className="relative z-0 flex items-center p-4 sm:p-6 bg-white/10 backdrop-blur-sm border border-green-800/20 hover:border-green-800/50 hover:bg-background/80 textbackground hover:text-background-light 
-                w-full
-                group-hover:ml-16 group-hover:w-[calc(100%-4rem)]
-                transition-all duration-300 ease-out
-                group-hover:animate-none
-                animate-[bounce-return_0.8s_cubic-bezier(0.68,-0.55,0.265,1.55)]"
-                  >
-                    <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -left-2 sm:-left-3 text-black" />
-                    <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -bottom-2 sm:-bottom-3 -left-2 sm:-left-3 text-black" />
-                    <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -right-2 sm:-right-3 text-black" />
-                    <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -bottom-2 sm:-bottom-3 -right-2 sm:-right-3 text-black" />
-                    {/* Workshop Name */}
-                    <span className="text-lg sm:text-xl font-semibold relative z-10 pr-20 group-hover:pl-8 transition-all duration-300">
-                      {workshop.name}
-                    </span>
-                  </a>
-                </div>
-              ))}
-              <Link href='https://www.facebook.com/' target="_blank" className="hover:text-dark-green duration-200 transition-all text-right hover:underline">Other workshops</Link>
-            </div>
+                    <a
+                      href={workshop.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="relative z-0 flex items-center p-4 sm:p-6 bg-white/10 backdrop-blur-sm border border-green-800/20 hover:border-green-800/50 hover:bg-background/80 textbackground hover:text-background-light
+                  w-full
+                  group-hover:ml-16 group-hover:w-[calc(100%-4rem)]
+                  transition-all duration-300 ease-out
+                  group-hover:animate-none
+                  animate-[bounce-return_0.8s_cubic-bezier(0.68,-0.55,0.265,1.55)]"
+                    >
+                      <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -left-2 sm:-left-3 text-black" />
+                      <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -bottom-2 sm:-bottom-3 -left-2 sm:-left-3 text-black" />
+                      <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -right-2 sm:-right-3 text-black" />
+                      <Icon className="absolute z-10 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -bottom-2 sm:-bottom-3 -right-2 sm:-right-3 text-black" />
+                      {/* Workshop Name */}
+                      <span className="text-lg sm:text-xl font-semibold relative z-10 pr-20 group-hover:pl-8 transition-all duration-300">
+                        {workshop.name}
+                      </span>
+                    </a>
+                  </div>
+                ))}
+                <Link
+                  href="https://events.itealab.org"
+                  target="_blank"
+                  className="hover:text-dark-green duration-200 transition-all text-right hover:underline"
+                >
+                  Other workshops
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
