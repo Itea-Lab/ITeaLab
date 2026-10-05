@@ -54,30 +54,60 @@ pnpm install
 ### 2. Run Development Server
 
 ```bash
+# Start Next.js development server (still works as before)
 pnpm dev
+
+# Or start the Vinext dev server (Vite / Cloudflare)
+pnpm run dev:vinext
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+- Next.js: [http://localhost:3000](http://localhost:3000)
+- Vinext: [http://localhost:3001](http://localhost:3001)
 
 ---
 
 ## Building and Running Production
 
-### 1. Build for Production
-
-Creates an optimized production build in `.next`:
+### Next.js
 
 ```bash
+# Build Next.js production bundle (.next)
 pnpm build
-```
 
-### 2. Start Production Server
-
-Runs the production server locally on port 3000:
-
-```bash
+# Start Next.js production server locally
 pnpm start
 ```
+
+### Cloudflare Workers (Vinext)
+
+```bash
+# Build production output
+pnpm run build:vinext
+
+# Preview the built Worker locally
+pnpm run start:vinext
+
+# Deploy Workers Response Store before the application
+pnpm run deploy:response-store
+
+# Deploy to Cloudflare Workers
+pnpm run deploy:vinext
+```
+
+---
+
+## Development & Maintenance Commands
+
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start Next.js (still works as before) |
+| `pnpm build` | Build Next.js production bundle |
+| `pnpm start` | Start Next.js production server |
+| `pnpm run dev:vinext` | Start the Vinext dev server |
+| `pnpm run build:vinext` | Build production output |
+| `pnpm run start:vinext` | Preview the built Worker locally |
+| `pnpm run deploy:response-store` | Deploy Workers Response Store before the application |
+| `pnpm run deploy:vinext` | Deploy to Cloudflare Workers |
 
 ---
 

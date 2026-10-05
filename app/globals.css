@@ -41,3 +41,12 @@ html.custom-cursor-active,
 html.custom-cursor-active * {
     cursor: none !important;
 }
+
+@keyframes slideLeft {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}

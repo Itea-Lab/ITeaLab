@@ -6,9 +6,15 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:vinext": "vite dev --port 3001",
+    "build:vinext": "vite build",
+    "start:vinext": "vite preview",
+    "deploy:vinext": "vinext-cloudflare deploy --warm-cache",
+    "deploy:response-store": "cf deploy --prebuilt --mode production --worker itealab-response-store"
   },
   "dependencies": {
+    "@cloudflare/workers-response-store": "^1.0.1",
     "@react-three/drei": "^10.7.1",
     "@react-three/fiber": "^9.3.0",
     "@supabase/ssr": "^0.12.7",
@@ -16,6 +22,7 @@
     "@tabler/icons-react": "^3.34.0",
     "@tanstack/react-query": "^5.104.1",
     "@types/three": "^0.179.0",
+    "@vinext/cloudflare": "^1.0.1",
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "cobe": "^0.6.4",
@@ -23,18 +30,26 @@
     "lucide-react": "^0.525.0",
     "next": "16.3.8",
     "next-cloudinary": "^6.17.5",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-server-dom-webpack": "^19.3.0",
     "react-spring": "^10.0.1",
     "tailwind-merge": "^3.3.1",
-    "three": "^0.179.1"
+    "three": "^0.179.1",
+    "vinext": "^1.0.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "2.0.0-beta.sha-52b0dc0e9",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.2",
+    "@vitejs/plugin-rsc": "^0.5.35",
+    "cf": "1.0.0-beta.12",
     "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+    "typescript": "^5",
+    "vite": "8.3.0"
+  },
+  "type": "module"
 }
