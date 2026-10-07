@@ -1,9 +1,11 @@
 'use client';
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { FloatingDock } from "./ui/floating-dock";
 import SimpleLanguageSwitcher from "./simple-language-switcher";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useLoading } from "../contexts/LoadingContext";
 import {
   IconBrandGithub,
   IconBrandX,
@@ -19,6 +21,7 @@ import {
 
 export function Navbar() { 
   const { t } = useLanguage();
+  const { isLoading } = useLoading();
   
   const links = [
     {
@@ -29,6 +32,7 @@ export function Navbar() {
           width={30}
           height={30}
           alt="ITea Lab Logo"
+          priority
         />),    
       href: "#",
       target: "_self",
@@ -97,13 +101,20 @@ export function Navbar() {
     },
   ];
   return (
-     <div className="fixed z-40 bottom-0 flex items-end justify-start h-auto w-full p-4 gap-4">
-      <FloatingDock
-        items={links}
-      />
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={
+        isLoading
+          ? { opacity: 0, y: 30, pointerEvents: "none" }
+          : { opacity: 1, y: 0, pointerEvents: "auto" }
+      }
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed z-40 bottom-0 flex items-end justify-start h-auto w-full p-4 gap-4"
+    >
+      <FloatingDock items={links} />
       <div className="flex h-16 items-end">
         <SimpleLanguageSwitcher />
       </div>
-    </div>
+    </motion.div>
   );
 }

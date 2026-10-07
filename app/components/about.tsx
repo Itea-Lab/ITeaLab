@@ -26,6 +26,7 @@ export function About() {
               alt="Conception image"
               width={500}
               height={700}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-40 sm:h-48 md:h-60 lg:h-80 w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"
             />
           </div>
@@ -48,6 +49,7 @@ export function About() {
               alt="hero template"
               width={500}
               height={500}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-32 sm:h-40 md:h-44 lg:h-60 w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"
             />
             <Image
@@ -55,6 +57,7 @@ export function About() {
               alt="feature template"
               width={500}
               height={500}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-32 sm:h-40 md:h-44 lg:h-60 w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"
             />
             <Image
@@ -62,6 +65,7 @@ export function About() {
               alt="bento template"
               width={500}
               height={500}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-32 sm:h-40 md:h-44 lg:h-60 w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"
             />
             <Image
@@ -69,6 +73,7 @@ export function About() {
               alt="cards template"
               width={500}
               height={500}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-32 sm:h-40 md:h-44 lg:h-60 w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"
             />
           </div>
@@ -91,6 +96,7 @@ export function About() {
               alt="Conception image"
               width={500}
               height={700}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-40 sm:h-48 md:h-60 lg:h-80 w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"
             />
           </div>
@@ -113,6 +119,7 @@ export function About() {
               alt="Conception image"
               width={500}
               height={700}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-40 sm:h-48 md:h-60 lg:h-80 w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"
             /> 
             <Image
@@ -120,6 +127,7 @@ export function About() {
               alt="Conception image"
               width={500}
               height={700}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-40 sm:h-48 md:h-60 lg:h-80 w-full rounded-lg object-cover shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]"
             />
           </div>
@@ -142,6 +150,7 @@ export function About() {
               alt="Conception image"
               width={500}
               height={700}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-40 sm:h-48 md:h-60 lg:h-80 w-full rounded-lg object-cover shadow-[0_6px_12px_rgba(0,100,50,0.4),_0_8px_16px_rgba(0,255,150,0.2)]"
             />
           </div>
@@ -157,10 +166,10 @@ export function About() {
         <div className="flex flex-col lg:flex-row justify-start items-start gap-6 sm:gap-8 lg:gap-12 mb-6 sm:mb-8 lg:mb-12">
           {/* About US Card */}
           <motion.div
-            className="flex-[2] relative border-1 border-white/10 w-full"
+            className="flex-[2] relative border border-white/10 w-full"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <Icon className="absolute h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -left-2 sm:-left-3 text-white" />
@@ -168,7 +177,7 @@ export function About() {
             <Icon className="absolute h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -right-2 sm:-right-3 text-white" />
             <Icon className="absolute h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -bottom-2 sm:-bottom-3 -right-2 sm:-right-3 text-white" />
 
-            <h2 className="font-michroma text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white pl-3 sm:pl-4 py-1 bg-gradient-to-r from-dark-green to-light-green max-w-4xl font-bold">
+            <h2 className="font-michroma text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white pl-3 sm:pl-4 py-1.5 sm:py-2 leading-normal bg-gradient-to-r from-dark-green to-light-green max-w-4xl font-bold">
               {t('about_us')}
             </h2>
             <p className="text-background-light text-sm sm:text-base md:text-lg p-3 sm:p-4 leading-relaxed">
@@ -178,10 +187,10 @@ export function About() {
 
           {/* Our VISION Card */}
           <motion.div
-            className="flex-[3] relative border-1 border-white/10 w-full"
+            className="flex-[3] relative border border-white/10 w-full"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.15 }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
           >
             <Icon className="absolute h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -left-2 sm:-left-3 text-white" />
@@ -189,7 +198,7 @@ export function About() {
             <Icon className="absolute h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -top-2 sm:-top-3 -right-2 sm:-right-3 text-white" />
             <Icon className="absolute h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 -bottom-2 sm:-bottom-3 -right-2 sm:-right-3 text-white" />
 
-            <h2 className="font-michroma text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white pl-3 sm:pl-4 py-1 bg-gradient-to-r from-dark-green to-light-green max-w-4xl font-bold">
+            <h2 className="font-michroma text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white pl-3 sm:pl-4 py-1.5 sm:py-2 leading-normal bg-gradient-to-r from-dark-green to-light-green max-w-4xl font-bold">
               {t('our_vision')}
             </h2>
             <p className="text-background-light text-sm sm:text-base md:text-lg p-3 sm:p-4 leading-relaxed">
@@ -200,18 +209,24 @@ export function About() {
 
         {/* Timeline Section */}
         <div className="max-w-7xl mx-auto pt-0 lg:pt-12 xl:pt-20">
-          <div className="relative border-1 border-white/10 w-3/4">
+          <motion.div
+            className="relative border border-white/10 w-full lg:w-3/4"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <Icon className="absolute h-6 w-6 -top-3 -left-3 text-white" />
             <Icon className="absolute h-6 w-6 -bottom-3 -left-3 text-white" />
             <Icon className="absolute h-6 w-6 -top-3 -right-3 text-white" />
             <Icon className="absolute h-6 w-6 -bottom-3 -right-3 text-white" />
-            <h2 className="font-michroma text-lg md:text-3xl bg-gradient-to-r from-dark-green to-light-green pl-4 py-1 font-bold">
+            <h2 className="font-michroma text-lg md:text-3xl bg-gradient-to-r from-dark-green to-light-green pl-4 py-1.5 sm:py-2 leading-normal font-bold">
               {t('our_journey')}
             </h2>
             <p className="text-background-light text-sm sm:text-base md:text-lg p-4">
               {t('journey_description')}
             </p>
-          </div>
+          </motion.div>
         </div>
         <Timeline data={data} />
       </div>

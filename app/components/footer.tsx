@@ -1,12 +1,36 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useInView } from "framer-motion";
 import { Github, Facebook, Linkedin, Mail } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 
+const FOOTER_BRAND_WORDS = [
+  { word: "ITea", chars: ["I", "T", "e", "a"], className: "mr-3 sm:mr-5 md:mr-7 lg:mr-10" },
+  { word: "Lab", chars: ["L", "a", "b"], className: "" },
+];
+
+const charVariants = {
+  hidden: {
+    y: "115%",
+    opacity: 0,
+  },
+  visible: (i: number) => ({
+    y: "0%",
+    opacity: 1,
+    transition: {
+      duration: 0.65,
+      delay: i * 0.06,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  }),
+};
+
 const Footer = () => {
   const { t } = useLanguage();
+  const brandRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(brandRef, { amount: "some", once: false });
   return (
     <footer className="w-full bg-background text-background-light relative overflow-hidden">
       {/* Main Footer Content */}
@@ -136,10 +160,34 @@ const Footer = () => {
           </Link>
         </div>
 
-        {/* Large Brand Name */}
-        <div className="text-left mb-8 sm:mb-12 leading-tight overflow-hidden">
-          <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-[120px] xl:text-[152px] 2xl:text-[216px] font-bold tracking-tight font-michroma break-words">
-            ITea Lab
+        {/* Large Brand Name with Character Wave Animation */}
+        <div ref={brandRef} className="text-left mb-8 sm:mb-12 leading-none py-2">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-[120px] xl:text-[152px] 2xl:text-[216px] font-bold tracking-tight font-michroma break-words flex flex-wrap items-baseline">
+            {FOOTER_BRAND_WORDS.map((wordObj, wordIdx) => {
+              const startIndex = wordIdx === 0 ? 0 : FOOTER_BRAND_WORDS[0].chars.length;
+              return (
+                <span
+                  key={wordObj.word}
+                  className={`inline-flex whitespace-nowrap overflow-hidden py-2 ${wordObj.className}`}
+                >
+                  {wordObj.chars.map((char, charIdx) => {
+                    const globalIndex = startIndex + charIdx;
+                    return (
+                      <motion.span
+                        key={charIdx}
+                        custom={globalIndex}
+                        variants={charVariants}
+                        initial="hidden"
+                        animate={isInView ? "visible" : "hidden"}
+                        className="inline-block will-change-transform"
+                      >
+                        {char}
+                      </motion.span>
+                    );
+                  })}
+                </span>
+              );
+            })}
           </h1>
         </div>
 

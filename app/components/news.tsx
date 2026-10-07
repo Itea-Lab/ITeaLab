@@ -63,7 +63,7 @@ const News = () => {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <h1 className="font-michroma mb-4 sm:mb-6 text-2xl sm:text-3xl md:text-4xl font-bold">
+          <h1 className="font-michroma mb-4 sm:mb-6 text-2xl sm:text-3xl md:text-4xl font-bold py-1 leading-normal">
             {t("itea_lab_news")}
           </h1>
           <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">

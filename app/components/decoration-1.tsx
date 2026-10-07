@@ -2,18 +2,32 @@
 import Image from "next/image"
 
 interface TextSliderProps {
-  text: string
+  text?: string
+  items?: string[]
   fontSize?: number
   speed?: number
   gap?: number
 }
 
-const TextSlider = ({ text, fontSize = 80, speed = 20, gap = 10 }: TextSliderProps) => {
+const TextSlider = ({
+  text,
+  items,
+  fontSize = 80,
+  speed = 20,
+  gap = 10,
+}: TextSliderProps) => {
   // Calculate animation duration based on speed (lower speed = slower animation)
   const animationDuration = `${speed}s`
 
-  // Create many more instances to ensure seamless loop
-  const textInstances = Array(20).fill(text)
+  const sliderItems = items ?? (text ? [text] : ["ITEA LAB", "WHERE TECH MEETS ITS QUALI-TEA"])
+
+  // Repeat sequence an even number of times so first half (-50%) matches second half seamlessly
+  const repeatCount = Math.max(4, Math.ceil(20 / sliderItems.length))
+  const evenRepeatCount = repeatCount % 2 === 0 ? repeatCount : repeatCount + 1
+  const textInstances = Array.from(
+    { length: evenRepeatCount * sliderItems.length },
+    (_, i) => sliderItems[i % sliderItems.length]
+  )
 
   // Responsive font sizes
   const responsiveFontSize = {
@@ -26,11 +40,11 @@ const TextSlider = ({ text, fontSize = 80, speed = 20, gap = 10 }: TextSliderPro
 
   const sliderVars = {
     "--slider-duration": animationDuration,
-    "--slider-h-base": `${responsiveFontSize.base * 1.2}px`,
-    "--slider-h-sm": `${responsiveFontSize.sm * 1.2}px`,
-    "--slider-h-md": `${responsiveFontSize.md * 1.2}px`,
-    "--slider-h-lg": `${responsiveFontSize.lg * 1.2}px`,
-    "--slider-h-xl": `${fontSize * 1.2}px`,
+    "--slider-h-base": `${responsiveFontSize.base * 1.8}px`,
+    "--slider-h-sm": `${responsiveFontSize.sm * 1.8}px`,
+    "--slider-h-md": `${responsiveFontSize.md * 1.8}px`,
+    "--slider-h-lg": `${responsiveFontSize.lg * 1.8}px`,
+    "--slider-h-xl": `${fontSize * 1.8}px`,
     "--slider-fs-base": `${responsiveFontSize.base}px`,
     "--slider-fs-sm": `${responsiveFontSize.sm}px`,
     "--slider-fs-md": `${responsiveFontSize.md}px`,
@@ -47,10 +61,10 @@ const TextSlider = ({ text, fontSize = 80, speed = 20, gap = 10 }: TextSliderPro
     <section className="w-full overflow-hidden" style={sliderVars}>
       {/* Left to Right */}
       <div 
-        className="w-full overflow-hidden relative h-[var(--slider-h-base)] sm:h-[var(--slider-h-sm)] md:h-[var(--slider-h-md)] lg:h-[var(--slider-h-lg)] xl:h-[var(--slider-h-xl)]"
+        className="w-full overflow-hidden relative flex items-center h-[var(--slider-h-base)] sm:h-[var(--slider-h-sm)] md:h-[var(--slider-h-md)] lg:h-[var(--slider-h-lg)] xl:h-[var(--slider-h-xl)]"
       >
         <div
-          className="flex absolute whitespace-nowrap"
+          className="flex absolute inset-y-0 items-center whitespace-nowrap"
           style={{
             animation: `slideLeft ${animationDuration} linear infinite`,
             width: "max-content",
@@ -59,15 +73,15 @@ const TextSlider = ({ text, fontSize = 80, speed = 20, gap = 10 }: TextSliderPro
           {textInstances.map((item, index) => (
             <span
               key={`row1-${index}`}
-              className="font-bold text-dark-green flex-shrink-0 font-michroma inline-flex items-center leading-[1.2] text-[length:var(--slider-fs-base)] sm:text-[length:var(--slider-fs-sm)] md:text-[length:var(--slider-fs-md)] lg:text-[length:var(--slider-fs-lg)] xl:text-[length:var(--slider-fs-xl)] mr-[var(--slider-gap-base)] sm:mr-[var(--slider-gap-sm)] md:mr-[var(--slider-gap-md)] lg:mr-[var(--slider-gap-lg)] xl:mr-[var(--slider-gap-xl)]"
+              className="font-bold text-dark-green flex-shrink-0 font-michroma uppercase inline-flex items-center leading-normal text-[length:var(--slider-fs-base)] sm:text-[length:var(--slider-fs-sm)] md:text-[length:var(--slider-fs-md)] lg:text-[length:var(--slider-fs-lg)] xl:text-[length:var(--slider-fs-xl)] mr-[var(--slider-gap-base)] sm:mr-[var(--slider-gap-sm)] md:mr-[var(--slider-gap-md)] lg:mr-[var(--slider-gap-lg)] xl:mr-[var(--slider-gap-xl)] py-2"
             >
               {item}
               <Image
                 src='/images/icon_transparent.png'
                 alt="itealab watermark"
-                width={responsiveFontSize.base * 1.5}
-                height={responsiveFontSize.base * 1.5}
-                className="ml-4 w-[calc(var(--slider-fs-base)*1.5)] sm:w-[calc(var(--slider-fs-sm)*1.5)] md:w-[calc(var(--slider-fs-md)*1.5)] lg:w-[calc(var(--slider-fs-lg)*1.5)] xl:w-[calc(var(--slider-fs-xl)*1.5)] h-auto"
+                width={60}
+                height={60}
+                className="ml-4 w-[calc(var(--slider-fs-base)*1.25)] sm:w-[calc(var(--slider-fs-sm)*1.25)] md:w-[calc(var(--slider-fs-md)*1.25)] lg:w-[calc(var(--slider-fs-lg)*1.25)] xl:w-[calc(var(--slider-fs-xl)*1.25)] h-auto object-contain flex-shrink-0"
               />
             </span>
           ))}
@@ -79,9 +93,9 @@ const TextSlider = ({ text, fontSize = 80, speed = 20, gap = 10 }: TextSliderPro
 
 export default function IteaLabSlider() {
   return (
-    <main className="w-full mx-auto bg-light-green py-2 sm:py-3 md:py-4">
+    <main className="w-full mx-auto bg-light-green py-6 sm:py-8 md:py-10 relative z-10">
       <TextSlider
-        text="ITEA LAB"
+        items={["ITEA LAB", "WHERE TECH MEETS ITS QUALI-TEA"]}
         fontSize={40}
         speed={50}
         gap={20}

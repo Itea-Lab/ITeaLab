@@ -88,7 +88,7 @@ export default function JoinUs() {
           {/* Left Section */}
           <div className="lg:w-1/2 flex flex-col justify-start gap-12">
             <div className="mb-8 lg:mb-12">
-              <h1 className="font-michroma text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
+              <h1 className="font-michroma text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold mb-4 sm:mb-6 leading-normal py-1">
                 {t("drop_us_line").split(" ").slice(0, 1)}
                 <br />
                 {t("drop_us_line").split(" ").slice(1).join(" ")}

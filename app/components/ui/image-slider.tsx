@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Icon } from "./plus-icon";
 
@@ -28,14 +28,34 @@ const ImageSlider = () => {
   ];
 
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isInView, setIsInView] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    // Generous rootMargin so it activates well before scrolling into view and stays smooth
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { rootMargin: "400px 0px 400px 0px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isInView) return;
+
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 3000); // Change slide every 3 seconds
 
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, [isInView, slides.length]);
 
   const goToSlide = (index: any) => {
     setCurrentSlide(index);
@@ -50,7 +70,7 @@ const ImageSlider = () => {
   };
 
   return (
-    <div className="relative col-span-3">
+    <div ref={containerRef} className="relative col-span-3">
       {/* Corner Icons */}
 
       <Icon className="absolute h-6 w-6 -top-3 -left-3 text-black" />

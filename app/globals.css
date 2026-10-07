@@ -50,3 +50,10 @@ html.custom-cursor-active * {
         transform: translateX(-50%);
     }
 }
+
+/* Vercel React Best Practices: rendering-content-visibility */
+.content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 700px;
+}
+

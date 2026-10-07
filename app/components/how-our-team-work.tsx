@@ -121,7 +121,7 @@ export default function HowOurTeamWork() {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-10 lg:px-12 relative z-10">
         {/* Header Section */}
         <div className="text-center mb-12 sm:mb-16 md:mb-20">
-          <h1 className="font-michroma mb-4 sm:mb-6 text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-dark-green to-light-green bg-clip-text">
+          <h1 className="font-michroma mb-4 sm:mb-6 text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-dark-green to-light-green bg-clip-text py-2 leading-normal sm:leading-relaxed inline-block">
             {t('how_team_work_title')}
           </h1>
 
