@@ -34,9 +34,38 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://itealab.org",
+  ),
   title: "ITeaLab - Innovation through Technology and Education",
   description:
     "We are a forward-thinking laboratory focused on advancing technology and education through innovative research and collaborative projects.",
+  openGraph: {
+    title: "ITeaLab - Innovation through Technology and Education",
+    description:
+      "We are a forward-thinking laboratory focused on advancing technology and education through innovative research and collaborative projects.",
+    url: "https://itealab.org",
+    siteName: "ITeaLab",
+    images: [
+      {
+        url: "https://res.cloudinary.com/dndgcwunv/image/upload/v1791471683/landingpage_qqam1l.png",
+        width: 1200,
+        height: 630,
+        alt: "ITeaLab - Innovation through Technology and Education",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ITeaLab - Innovation through Technology and Education",
+    description:
+      "We are a forward-thinking laboratory focused on advancing technology and education through innovative research and collaborative projects.",
+    images: [
+      "https://res.cloudinary.com/dndgcwunv/image/upload/v1791471683/landingpage_qqam1l.png",
+    ],
+  },
 };
 
 export default function RootLayout({
