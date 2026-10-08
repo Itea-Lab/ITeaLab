@@ -133,8 +133,10 @@ const News = () => {
                         <Image
                           src={item.image || "/placeholder.svg"}
                           alt={item.alt || item.title}
-                          width={400}
-                          height={300}
+                          width={800}
+                          height={500}
+                          sizes="(max-width: 768px) 100vw, 500px"
+                          quality={90}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />

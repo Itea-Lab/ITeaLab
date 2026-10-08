@@ -305,6 +305,8 @@ export default function Hero() {
               src="/images/iot.jpg"
               alt=""
               fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 40vw, 360px"
+              quality={90}
               className="object-cover"
               priority // This preloads the image
             />
@@ -475,6 +477,8 @@ export default function Hero() {
                 src="/images/icon_transparent.png"
                 alt="Hero Image"
                 fill
+                sizes="(max-width: 640px) 80px, (max-width: 1024px) 120px, 150px"
+                quality={95}
                 className="object-cover"
                 priority // This preloads the image
               />
@@ -626,6 +630,8 @@ export default function Hero() {
                 src="/images/icon_transparent.png"
                 alt="Hero Image"
                 fill
+                sizes="(max-width: 640px) 80px, (max-width: 1024px) 120px, 150px"
+                quality={95}
                 className="object-cover"
               />
             </div>

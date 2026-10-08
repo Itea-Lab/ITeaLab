@@ -1,20 +1,25 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getUserLanguage, setUserLanguage, t, initializeLanguage } from '../utils/language';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import {
+  getUserLanguage,
+  setUserLanguage,
+  t,
+  initializeLanguage,
+} from "../utils/language";
 
 const LanguageContext = createContext();
 
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    throw new Error("useLanguage must be used within a LanguageProvider");
   }
   return context;
 };
 
 export const LanguageProvider = ({ children }) => {
-  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [currentLanguage, setCurrentLanguage] = useState("en");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -32,9 +37,9 @@ export const LanguageProvider = ({ children }) => {
       setCurrentLanguage(event.detail.language);
     };
 
-    window.addEventListener('languageChanged', handleLanguageChange);
+    window.addEventListener("languageChanged", handleLanguageChange);
     return () => {
-      window.removeEventListener('languageChanged', handleLanguageChange);
+      window.removeEventListener("languageChanged", handleLanguageChange);
     };
   }, []);
 
@@ -51,12 +56,8 @@ export const LanguageProvider = ({ children }) => {
     currentLanguage,
     changeLanguage,
     t: translate,
-    isLoading
+    isLoading,
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <LanguageContext.Provider value={value}>

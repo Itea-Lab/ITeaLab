@@ -8,22 +8,20 @@ import Image from "next/image";
 
 export default function HowOurTeamWork() {
   const { t } = useLanguage();
-  
+
   const items = [
     {
-      title: t('research_driven'),
-      description: (
-        <span className="text-sm">
-          {t('research_driven_desc')}
-        </span>
-      ),
+      title: t("research_driven"),
+      description: <span className="text-sm">{t("research_driven_desc")}</span>,
       header: (
         <div className="flex flex-1 w-full h-full min-h-[6rem] p-4">
-          <Image 
-            src="/images/decoration_4.png" 
-            alt="decoration" 
-            width={200} 
-            height={200}
+          <Image
+            src="/images/decoration_4.png"
+            alt="decoration"
+            width={800}
+            height={500}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            quality={90}
             className="w-full h-full object-cover rounded-xl"
           />
         </div>
@@ -32,19 +30,19 @@ export default function HowOurTeamWork() {
       shape: "dodecahedron",
     },
     {
-      title: t('agile_methodology'),
+      title: t("agile_methodology"),
       description: (
-        <span className="text-sm">
-          {t('agile_methodology_desc')}
-        </span>
+        <span className="text-sm">{t("agile_methodology_desc")}</span>
       ),
       header: (
         <div className="flex flex-1 w-full h-full min-h-[6rem] p-4">
-          <Image 
-            src="/images/decoration_3.jpg" 
-            alt="decoration" 
-            width={200} 
-            height={200}
+          <Image
+            src="/images/decoration_3.jpg"
+            alt="decoration"
+            width={600}
+            height={500}
+            sizes="(max-width: 768px) 100vw, 33vw"
+            quality={90}
             className="w-full h-full object-cover rounded-xl"
           />
         </div>
@@ -53,19 +51,17 @@ export default function HowOurTeamWork() {
       shape: "tetrahedron",
     },
     {
-      title: t('flexible_work'),
-      description: (
-        <span className="text-sm">
-          {t('flexible_work_desc')}
-        </span>
-      ),
+      title: t("flexible_work"),
+      description: <span className="text-sm">{t("flexible_work_desc")}</span>,
       header: (
         <div className="flex flex-1 w-full h-full min-h-[6rem] p-4">
-          <Image 
-            src="/images/decoration_2.jpg" 
-            alt="decoration" 
-            width={200} 
-            height={200}
+          <Image
+            src="/images/decoration_2.jpg"
+            alt="decoration"
+            width={600}
+            height={500}
+            sizes="(max-width: 768px) 100vw, 33vw"
+            quality={90}
             className="w-full h-full object-cover rounded-xl"
           />
         </div>
@@ -74,19 +70,19 @@ export default function HowOurTeamWork() {
       shape: "octahedron",
     },
     {
-      title: t('continuous_growth'),
+      title: t("continuous_growth"),
       description: (
-        <span className="text-sm">
-          {t('continuous_growth_desc')}
-        </span>
+        <span className="text-sm">{t("continuous_growth_desc")}</span>
       ),
       header: (
         <div className="flex flex-1 w-full h-full min-h-[6rem] p-4">
-          <Image 
-            src="/images/decoration.jpg" 
-            alt="decoration" 
-            width={200} 
-            height={200}
+          <Image
+            src="/images/decoration.jpg"
+            alt="decoration"
+            width={800}
+            height={500}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            quality={90}
             className="w-full h-full object-cover rounded-xl"
           />
         </div>
@@ -101,7 +97,6 @@ export default function HowOurTeamWork() {
       id="how-our-team-work"
       className="bg-background-light w-full text-black py-16 sm:py-20 md:py-24 lg:py-32 relative"
     >
-
       <Image
         src="/images/icon_transparent.png"
         width={800}
@@ -117,16 +112,16 @@ export default function HowOurTeamWork() {
           backgroundRepeat: "no-repeat",
         }}
       />
-      
+
       <div className="max-w-7xl mx-auto px-6 sm:px-8 md:px-10 lg:px-12 relative z-10">
         {/* Header Section */}
         <div className="text-center mb-12 sm:mb-16 md:mb-20">
           <h1 className="font-michroma mb-4 sm:mb-6 text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-dark-green to-light-green bg-clip-text py-2 leading-normal sm:leading-relaxed inline-block">
-            {t('how_team_work_title')}
+            {t("how_team_work_title")}
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-center max-w-3xl mx-auto transition-opacity duration-2000 leading-relaxed px-4">
-            {t('how_team_work_description')}
+            {t("how_team_work_description")}
           </p>
         </div>
 
@@ -138,8 +133,9 @@ export default function HowOurTeamWork() {
               title={item.title}
               description={item.description}
               header={item.header}
-              className={cn("backdrop-blur-sm border-green-800/20 hover:border-green-800/50 ",
-                item.className
+              className={cn(
+                "backdrop-blur-sm border-green-800/20 hover:border-green-800/50 ",
+                item.className,
               )}
               shape={item.shape || "square"}
             />

@@ -91,8 +91,9 @@ const ImageSlider = () => {
               <Image
                 src={slide.image}
                 alt={slide.title}
-                width={800}
-                height={400}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                quality={90}
                 className="w-full h-full object-cover"
               />
               {/* Text Overlay - Bottom Left */}
